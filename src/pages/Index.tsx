@@ -35,13 +35,10 @@ const Index: React.FC = () => {
           </div>
           <h1 className="font-typewriter text-4xl md:text-5xl lg:text-6xl mb-6 tracking-tight">
             <TypewriterText 
-              text="Human-like responses with artificial intelligence." 
+              text="Digital sass at your fingertips." 
               delay={50}
             />
           </h1>
-          <p className="text-muted-foreground text-lg max-w-lg mx-auto">
-            A minimal AI experience with a nostalgic typewriter effect that delivers content tailored just for you.
-          </p>
         </div>
         
         <ContentGenerator />
