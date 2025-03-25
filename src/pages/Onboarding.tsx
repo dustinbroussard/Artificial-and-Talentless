@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useUser } from '@/context/UserContext';
+import { useUser, ContentType } from '@/context/UserContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -17,12 +17,13 @@ interface OnboardingQuestion {
   question: string;
   type: 'text' | 'checkbox' | 'radio';
   options?: string[];
-  property: keyof ReturnType<typeof useUser>['profile'];
+  property: keyof ReturnType<typeof useUser>['profile'] | 'contentType';
+  isPreference?: boolean;
 }
 
 const Onboarding: React.FC = () => {
   const navigate = useNavigate();
-  const { profile, updateProfile, setIsFirstVisit } = useUser();
+  const { profile, updateProfile, setIsFirstVisit, preferences, updatePreferences } = useUser();
   const [step, setStep] = useState(0);
   const [typingComplete, setTypingComplete] = useState(false);
 
@@ -71,7 +72,8 @@ const Onboarding: React.FC = () => {
       question: 'What kind of content would you prefer?',
       type: 'radio',
       options: ['Insults', 'Affirmations', 'Inspirational', 'Random'],
-      property: 'contentType'
+      property: 'contentType',
+      isPreference: true
     },
     {
       id: 'notifications',
@@ -106,11 +108,19 @@ const Onboarding: React.FC = () => {
   const handleInputChange = (value: any) => {
     const currentQuestion = questions[step];
     if (currentQuestion) {
-      if (currentQuestion.type === 'text' && typeof value === 'string') {
-        const formattedValue = value.split(',').map(item => item.trim());
-        updateProfile({ [currentQuestion.property]: formattedValue });
+      if (currentQuestion.isPreference) {
+        // Handle preference properties
+        if (currentQuestion.property === 'contentType') {
+          updatePreferences({ contentType: value as ContentType });
+        }
       } else {
-        updateProfile({ [currentQuestion.property]: value });
+        // Handle profile properties
+        if (currentQuestion.type === 'text' && typeof value === 'string') {
+          const formattedValue = value.split(',').map(item => item.trim());
+          updateProfile({ [currentQuestion.property]: formattedValue });
+        } else {
+          updateProfile({ [currentQuestion.property]: value });
+        }
       }
     }
   };
