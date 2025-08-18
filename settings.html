@@ -1,0 +1,81 @@
+<!DOCTYPE html><html lang="en" class="light"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Artificial -and- Talentless - Settings</title>
+    <!-- Tailwind CSS CDN for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Special Elite for that vintage typewriter feel -->
+    <link href="https://fonts.googleapis.com/css2?family=Special+Elite&amp;display=swap" rel="stylesheet">
+    
+<link rel="stylesheet" href="style.css"></head>
+<body>
+    <!-- New fixed header for title and theme toggle -->
+    <div id="header-content" class="settings">
+        <h1 id="settings-main-title">Settings</h1>
+        <div id="theme-toggle-switch-container">
+            <!-- The switch HTML structure -->
+            <div id="theme-toggle-icons">
+                <i class="fas fa-sun" id="light-icon"></i>
+                <i class="fas fa-moon" id="dark-icon"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main content area for displaying settings -->
+    <div id="main-content-area" class="settings">
+        <!-- API Key and Model Section -->
+        <div class="setting-section">
+            <h2 class="setting-title">AI Engine Settings</h2>
+            <label for="openrouter-api-key" class="block text-sm mb-2 text-center">OpenRouter API Key:</label>
+            <input type="password" id="openrouter-api-key" class="input-field" placeholder="sk-...">
+            <a href="https://openrouter.ai/keys" target="_blank" class="api-link">Get your API key here</a>
+
+            <label for="openrouter-model-select" class="block text-sm my-2 text-center">Select Model:</label>
+            <select id="openrouter-model-select" class="input-field">
+                <option value="">Loading models...</option>
+            </select>
+            <div id="model-loading-spinner" class="spinner"></div>
+
+            <div class="checkbox-container">
+                <input type="checkbox" id="filter-free-models">
+                <label for="filter-free-models">Show only free models</label>
+            </div>
+        </div>
+
+        <!-- Content Type Section -->
+        <div class="setting-section">
+            <h2 class="setting-title">Content Type</h2>
+            <select id="content-type-select" class="input-field">
+                <option value="Mild Insults">Mild Insults</option>
+                <option value="Harsh Insults">Harsh Insults</option>
+                <option value="Cruel Insults">Cruel Insults</option>
+                <option value="Sarcastic Affirmations">Sarcastic Affirmations</option>
+                <option value="Dad Jokes">Dad Jokes</option>
+                <option value="Affirmations">Affirmations</option>
+                <option value="Inspirational Quotes">Inspirational Quotes</option>
+                <option value="Random">Random</option>
+                <option value="Backhanded Compliments">Backhanded Compliments</option>
+            </select>
+        </div>
+
+        <!-- Data Section -->
+        <div class="setting-section">
+            <h2 class="setting-title">Data</h2>
+            <p class="data-info">All information is stored locally on the device. Deleting it essentially resets the application.</p>
+            <button id="delete-data-button">DELETE</button>
+        </div>
+    </div>
+
+    <!-- Global Footer for Navigation Buttons, fixed at the bottom -->
+    <div id="button-footer">
+        <button id="back-to-generator-button" class="nav-button">Back</button>
+        <button id="save-settings-button" class="nav-button">Save</button>
+    </div>
+
+    
+
+
+
+<script src="js/settings.js"></script></body></html>

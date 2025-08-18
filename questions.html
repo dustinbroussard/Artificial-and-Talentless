@@ -1,0 +1,108 @@
+<!DOCTYPE html><html lang="en" class="light"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Artificial -and- Talentless - Onboarding</title>
+    <!-- Tailwind CSS CDN for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Special Elite for that vintage typewriter feel -->
+    <link href="https://fonts.googleapis.com/css2?family=Special+Elite&amp;display=swap" rel="stylesheet">
+    
+<link rel="stylesheet" href="style.css"></head>
+<body>
+    <!-- Container for the logo, fixed at the top of the viewport -->
+    <div id="logo-container">
+        <!-- Using logo.jpg as per previous file uploads, added onerror for robustness -->
+        <img id="logo" src="assets/logo.png" alt="Artificial -and- Talentless Logo" onerror="this.onerror=null; this.src='https://placehold.co/350x80/1A1A1A/FFFFE3?text=Logo'" data-dark-src="assets/logo-dark.png">
+        <button id="theme-toggle" class="theme-toggle">Theme</button>
+    </div>
+
+    <!-- Main content area for displaying questions, centered vertically -->
+    <div id="main-content-area" class="questions">
+        <!-- Question 1 -->
+        <div id="question-humor" class="question-container">
+            <h2 class="question">What type of humor do you enjoy?</h2>
+            <div class="options-container">
+                <button class="option-button" data-question-id="humor" data-answer="Sarcastic">A) Sarcastic</button>
+                <button class="option-button" data-question-id="humor" data-answer="Dry">B) Dry</button>
+                <button class="option-button" data-question-id="humor" data-answer="Witty">C) Witty</button>
+                <button class="option-button" data-question-id="humor" data-answer="Goofy">D) Goofy</button>
+                <button class="option-button" data-question-id="humor" data-answer="Dark">E) Dark</button>
+                <button class="option-button" data-question-id="humor" data-answer="Slapstick">F) Slapstick</button>
+            </div>
+        </div>
+
+        <!-- Question 2 -->
+        <div id="question-self-description" class="question-container">
+            <h2 class="question">If you had to choose one word to describe yourself, what would it be?</h2>
+            <div class="options-container">
+                <button class="option-button" data-question-id="self-description" data-answer="Driven">A) Driven</button>
+                <button class="option-button" data-question-id="self-description" data-answer="Laid-back">B) Laid-back</button>
+                <button class="option-button" data-question-id="self-description" data-answer="Persistent">C) Persistent</button>
+                <button class="option-button" data-question-id="self-description" data-answer="Chaotic">D) Chaotic</button>
+                <button class="option-button" data-question-id="self-description" data-answer="Curious">E) Curious</button>
+                <button class="option-button" data-question-id="self-description" data-answer="Ambitious">F) Ambitious</button>
+            </div>
+        </div>
+
+        <!-- Question 3 -->
+        <div id="question-friends-description" class="question-container">
+            <h2 class="question">How would your friends describe your personality?</h2>
+            <div class="options-container">
+                <button class="option-button" data-question-id="friends-description" data-answer="Outgoing">A) Outgoing</button>
+                <button class="option-button" data-question-id="friends-description" data-answer="Chill">B) Chill</button>
+                <button class="option-button" data-question-id="friends-description" data-answer="The leader of the group">C) The "leader"</button>
+                <button class="option-button" data-question-id="friends-description" data-answer="The joker">D) The "joker"</button>
+                <button class="option-button" data-question-id="friends-description" data-answer="The thinker">E) The thinker</button>
+                <button class="option-button" data-question-id="friends-description" data-answer="The quiet one">F) The quiet one</button>
+            </div>
+        </div>
+
+        <!-- Question Interests (Open-ended) -->
+        <div id="question-interests" class="question-container">
+            <h2 class="question">What are some of your interests or hobbies?</h2>
+            <div class="open-ended-container">
+                <label for="interests-textarea">Tell me what you enjoy doing:</label>
+                <textarea id="interests-textarea" name="interests"></textarea>
+            </div>
+        </div>
+
+        <!-- Question Job (Open-ended) -->
+        <div id="question-job" class="question-container">
+            <h2 class="question">If you are employed, describe your job. If not, describe a job you think you'd enjoy.</h2>
+            <div class="open-ended-container">
+                <label for="job-textarea">Describe your work (or dream work):</label>
+                <textarea id="job-textarea" name="job"></textarea>
+            </div>
+        </div>
+
+        <!-- Question Strengths (Open-ended) -->
+        <div id="question-strengths" class="question-container">
+            <h2 class="question">What do you consider your personal strengths?</h2>
+            <div class="open-ended-container">
+                <label for="strengths-textarea">What are you good at?</label>
+                <textarea id="strengths-textarea" name="strengths"></textarea>
+            </div>
+        </div>
+
+        <!-- Question Improve (Open-ended) -->
+        <div id="question-improve" class="question-container">
+            <h2 class="question">What are some areas you'd like to improve?</h2>
+            <div class="open-ended-container">
+                <label for="improve-textarea">What would you like to work on?</label>
+                <textarea id="improve-textarea" name="improve"></textarea>
+            </div>
+        </div>
+    </div>
+
+    <!-- Global Footer for Navigation Buttons, fixed at the bottom -->
+    <div id="button-footer">
+        <button id="prev-button" class="nav-button">Prev</button>
+        <button id="next-button" class="nav-button">Next</button>
+    </div>
+
+    
+
+
+
+<script src="js/theme.js"></script>
+<script src="js/questions.js"></script></body></html>
