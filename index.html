@@ -16,10 +16,18 @@
     
 <link rel="stylesheet" href="style.css"></head>
 <body>
+    <div id="header-content" class="global">
+        <div id="theme-toggle-switch-container">
+            <!-- The switch HTML structure -->
+            <div id="theme-toggle-icons">
+                <i class="fas fa-sun" id="light-icon"></i>
+                <i class="fas fa-moon" id="dark-icon"></i>
+            </div>
+        </div>
+    </div
     <!-- Container for the logo, fixed at the top of the viewport -->
     <div id="logo-container">
         <img id="logo" src="assets/logo.png" alt="Artificial -and- Talentless Logo" onerror="this.onerror=null; this.src='https://placehold.co/350x80/1A1A1A/FFFFE3?text=Logo'" data-dark-src="assets/logo-dark.png">
-        <button id="theme-toggle" class="theme-toggle">Theme</button>
     </div>
 
     <!-- Main content area that will center the text vertically -->

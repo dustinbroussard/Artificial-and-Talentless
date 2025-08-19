@@ -112,9 +112,21 @@ body {
   z-index: 10;
   width: 100%;
   max-width: 100%;
+  padding: 0 var(--space-5);
+}
+
+#header-content.global {
+  position: fixed;
+  top: 5px;
+  left: 10%;
+  transform: translateX(-50%);
+  z-index: 10;
+  width: 100%;
+  max-width: 100%;
   text-align: center;
   padding: 0 var(--space-5);
 }
+
 
 #logo {
   max-width: var(--logo-max);
@@ -471,6 +483,8 @@ body.dark-mode .spinner {
   visibility: hidden; /* generator reveals via JS */
   white-space: pre-wrap;
   min-height: 1.6em;
+  margin-right: 1rem;
+  margin-left: 1rem;
 }
 
 /* 17) Theme toggle icons */
