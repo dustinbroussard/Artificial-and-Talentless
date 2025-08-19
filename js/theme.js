@@ -1,40 +1,43 @@
-// Global theme toggling using sun/moon icons
-document.addEventListener('DOMContentLoaded', () => {
-    const body = document.body;
-    const lightIcon = document.getElementById('light-icon');
-    const darkIcon = document.getElementById('dark-icon');
+(function () {
+  const KEY = 'app:theme';
+  const media = window.matchMedia('(prefers-color-scheme: dark)');
 
-    function applyTheme(theme) {
-        if (theme === 'dark') {
-            body.classList.add('dark-mode');
-            if (lightIcon) lightIcon.style.display = 'none';
-            if (darkIcon) darkIcon.style.display = 'inline-block';
-        } else {
-            body.classList.remove('dark-mode');
-            if (lightIcon) lightIcon.style.display = 'inline-block';
-            if (darkIcon) darkIcon.style.display = 'none';
-        }
-        localStorage.setItem('theme', theme);
+  const systemTheme = () => (media.matches ? 'dark' : 'light');
 
-        // Swap images if a dark version is provided
-        document.querySelectorAll('img[data-dark-src]').forEach(img => {
-            if (!img.dataset.lightSrc) {
-                img.dataset.lightSrc = img.src;
-            }
-            img.src = theme === 'dark' ? img.dataset.darkSrc : img.dataset.lightSrc;
-        });
+  const applyTheme = (preference) => {
+    const theme = preference === 'system' ? systemTheme() : preference;
+    const root = document.documentElement;
+    root.setAttribute('data-theme', theme);
+    root.style.colorScheme = theme;
+
+    const btn = document.getElementById('theme-toggle');
+    if (btn) btn.setAttribute('aria-pressed', String(theme === 'dark'));
+
+    localStorage.setItem(KEY, preference);
+  };
+
+  const init = () => {
+    const pref = localStorage.getItem(KEY) || 'system';
+    applyTheme(pref);
+
+    media.addEventListener('change', () => {
+      if (localStorage.getItem(KEY) === 'system') applyTheme('system');
+    });
+
+    const btn = document.getElementById('theme-toggle');
+    if (btn) btn.addEventListener('click', () => {
+      const current = document.documentElement.getAttribute('data-theme');
+      const next = current === 'dark' ? 'light' : 'dark';
+      applyTheme(next);
+    });
+
+    const sel = document.getElementById('theme-select');
+    if (sel) {
+      sel.value = pref;
+      sel.addEventListener('change', () => applyTheme(sel.value));
     }
+  };
 
-    // Initialize theme from localStorage or default to light
-    applyTheme(localStorage.getItem('theme') || 'light');
-
-    const toggleIcons = document.getElementById('theme-toggle-icons');
-    if (toggleIcons) {
-        toggleIcons.addEventListener('click', () => {
-            const current = localStorage.getItem('theme') || 'light';
-            const next = current === 'light' ? 'dark' : 'light';
-            applyTheme(next);
-        });
-    }
-});
+  document.addEventListener('DOMContentLoaded', init);
+})();
 
