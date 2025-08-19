@@ -67,15 +67,18 @@ function normalizeRequest(request) {
     });
   }
   
-  if (request.mode === 'navigate') {
+  // For all requests (including navigation), ensure redirect mode is 'follow'
+  if (request.redirect !== 'follow') {
     return new Request(request.url, {
-      method: 'GET',
+      method: request.method,
       headers: request.headers,
-      mode: 'same-origin',
-      redirect: 'follow',
+      mode: request.mode,
       credentials: request.credentials,
+      cache: request.cache,
+      redirect: 'follow',
       referrer: request.referrer,
-      referrerPolicy: request.referrerPolicy
+      referrerPolicy: request.referrerPolicy,
+      integrity: request.integrity
     });
   }
   return request;
