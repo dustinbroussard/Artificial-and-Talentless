@@ -1,45 +1,40 @@
-// Theme management including logo switching
-function toggleTheme() {
-    const html = document.documentElement;
-    const isDark = html.classList.toggle('dark');
-    localStorage.setItem('dark-mode', isDark);
-    updateLogoForTheme(isDark);
-}
-
-function updateLogoForTheme(isDark) {
-    const logo = document.getElementById('logo');
-    if (!logo) return;
-
-    const darkSrc = logo.dataset.darkSrc;
-    const currentSrc = logo.src;
-    
-    if (isDark && darkSrc && !currentSrc.endsWith('logo-dark.png')) {
-        logo.dataset.lightSrc = currentSrc;
-        logo.src = darkSrc;
-    } else if (!isDark && logo.dataset.lightSrc && currentSrc.endsWith('logo-dark.png')) {
-        logo.src = logo.dataset.lightSrc;
-    }
-}
-
-function initTheme() {
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    const storedDark = localStorage.getItem('dark-mode');
-    const darkMode = storedDark ? JSON.parse(storedDark) : prefersDark;
-
-    if (darkMode) {
-        document.documentElement.classList.add('dark');
-    }
-    updateLogoForTheme(darkMode);
-}
-
-function setupThemeToggle() {
-    const themeToggle = document.getElementById('theme-toggle');
-    if (themeToggle) {
-        themeToggle.addEventListener('click', toggleTheme);
-    }
-}
-
+// Global theme toggling using sun/moon icons
 document.addEventListener('DOMContentLoaded', () => {
-    initTheme();
-    setupThemeToggle();
+    const body = document.body;
+    const lightIcon = document.getElementById('light-icon');
+    const darkIcon = document.getElementById('dark-icon');
+
+    function applyTheme(theme) {
+        if (theme === 'dark') {
+            body.classList.add('dark-mode');
+            if (lightIcon) lightIcon.style.display = 'none';
+            if (darkIcon) darkIcon.style.display = 'inline-block';
+        } else {
+            body.classList.remove('dark-mode');
+            if (lightIcon) lightIcon.style.display = 'inline-block';
+            if (darkIcon) darkIcon.style.display = 'none';
+        }
+        localStorage.setItem('theme', theme);
+
+        // Swap images if a dark version is provided
+        document.querySelectorAll('img[data-dark-src]').forEach(img => {
+            if (!img.dataset.lightSrc) {
+                img.dataset.lightSrc = img.src;
+            }
+            img.src = theme === 'dark' ? img.dataset.darkSrc : img.dataset.lightSrc;
+        });
+    }
+
+    // Initialize theme from localStorage or default to light
+    applyTheme(localStorage.getItem('theme') || 'light');
+
+    const toggleIcons = document.getElementById('theme-toggle-icons');
+    if (toggleIcons) {
+        toggleIcons.addEventListener('click', () => {
+            const current = localStorage.getItem('theme') || 'light';
+            const next = current === 'light' ? 'dark' : 'light';
+            applyTheme(next);
+        });
+    }
 });
+
