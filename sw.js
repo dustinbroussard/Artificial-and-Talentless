@@ -74,36 +74,38 @@ self.addEventListener('fetch', (event) => {
   event.respondWith((async () => {
     const normalizedRequest = normalizeRequest(event.request);
     const isNav = normalizedRequest.mode === 'navigate';
-
+    
     try {
-      // Always try network first for navigation requests
-      if (isNav) {
-        const network = await fetch(normalizedRequest);
-        return network.redirected 
-          ? await fetch(network.url, { redirect: 'follow' })
-          : network;
+      // First try cache for non-nav requests
+      if (!isNav) {
+        const cached = await caches.match(normalizedRequest);
+        if (cached) return cached;
       }
 
-      // For other requests: cache first, then network
-      const cached = await caches.match(normalizedRequest);
-      if (cached) return cached;
-
-      const network = await fetch(normalizedRequest);
+      // Try network for all requests
+      const networkResponse = await fetch(normalizedRequest);
       
-      if (network.redirected) {
-        return fetch(network.url, { redirect: 'follow' });
+      // Handle redirects by following them to their destination
+      if (networkResponse.redirected) {
+        return fetch(networkResponse.url, {
+          redirect: 'follow',
+          headers: normalizedRequest.headers
+        });
       }
 
-      if (network.status === 200) {
+      // Cache successful non-nav responses
+      if (!isNav && networkResponse.status === 200) {
         const cache = await caches.open(CACHE_NAME);
-        await cache.put(normalizedRequest, network.clone());
+        cache.put(normalizedRequest, networkResponse.clone());
       }
 
-      return network;
+      return networkResponse;
     } catch (e) {
       // Fallback to cache when offline
-      const fallback = await caches.match(normalizedRequest, { ignoreSearch: true });
-      if (fallback) return fallback;
+      if (!isNav) {
+        const fallback = await caches.match(normalizedRequest, { ignoreSearch: true });
+        if (fallback) return fallback;
+      }
       throw e;
     }
   })());
