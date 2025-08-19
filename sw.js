@@ -82,16 +82,15 @@ self.addEventListener('fetch', (event) => {
         if (cached) return cached;
       }
 
-      // Try network for all requests
-      const networkResponse = await fetch(normalizedRequest);
-      
-      // Handle redirects by following them to their destination
-      if (networkResponse.redirected) {
-        return fetch(networkResponse.url, {
-          redirect: 'follow',
-          headers: normalizedRequest.headers
-        });
-      }
+      // Try network with explicit redirect following
+      const networkResponse = await fetch(normalizedRequest.url, {
+        redirect: 'follow',
+        headers: normalizedRequest.headers,
+        method: normalizedRequest.method,
+        credentials: normalizedRequest.credentials,
+        cache: normalizedRequest.cache,
+        referrer: normalizedRequest.referrer
+      });
 
       // Cache successful non-nav responses
       if (!isNav && networkResponse.status === 200) {
