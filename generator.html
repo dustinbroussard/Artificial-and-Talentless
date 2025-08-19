@@ -4,11 +4,21 @@
     <title>Artificial -and- Talentless - Generate</title>
     <!-- Tailwind CSS CDN for styling -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Google Fonts: Special Elite for that vintage typewriter feel -->
     <link href="https://fonts.googleapis.com/css2?family=Special+Elite&amp;display=swap" rel="stylesheet">
     
 <link rel="stylesheet" href="style.css"></head>
 <body>
+    <div id="header-content" class="global">
+        <div id="theme-toggle-switch-container">
+            <div id="theme-toggle-icons">
+                <i class="fas fa-sun" id="light-icon"></i>
+                <i class="fas fa-moon" id="dark-icon"></i>
+            </div>
+        </div>
+    </div>
     <!-- Main content area for the loading message, spinner, or generated content -->
     <div id="main-content-area" class="generate">
         <p id="display-content" class="content-display"></p>
@@ -24,5 +34,5 @@
     
 
 
-
+    <script src="js/theme.js"></script>
 <script src="js/generator.js"></script></body></html>
