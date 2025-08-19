@@ -420,6 +420,7 @@ body.dark-mode .spinner {
 .message-box {
   position: fixed;
   left: 50%;
+  top: 75%;
   bottom: calc(var(--page-pad-bot) + 16px);
   transform: translateX(-50%);
   background: var(--bg-alt);
