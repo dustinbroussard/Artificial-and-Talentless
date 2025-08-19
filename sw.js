@@ -83,14 +83,8 @@ self.addEventListener('fetch', (event) => {
       }
 
       // Try network with explicit redirect following
-      const networkResponse = await fetch(normalizedRequest.url, {
-        redirect: 'follow',
-        headers: normalizedRequest.headers,
-        method: normalizedRequest.method,
-        credentials: normalizedRequest.credentials,
-        cache: normalizedRequest.cache,
-        referrer: normalizedRequest.referrer
-      });
+      // Use the normalized request directly to preserve all properties
+      const networkResponse = await fetch(normalizedRequest);
 
       // Cache successful non-nav responses
       if (!isNav && networkResponse.status === 200) {

@@ -16,7 +16,11 @@
     // Update logo based on theme
     const logos = document.querySelectorAll('img[data-theme-src]');
     logos.forEach(img => {
-      img.src = img.dataset[`theme${theme.charAt(0).toUpperCase() + theme.slice(1)}Src`] || img.src;
+      const themeSrc = img.dataset[`theme${theme.charAt(0).toUpperCase() + theme.slice(1)}Src`];
+      if (themeSrc) {
+        img.src = themeSrc;
+        img.removeAttribute('srcset'); // Clear srcset for SVG/retina cases
+      }
     });
 
     localStorage.setItem(KEY, preference);
