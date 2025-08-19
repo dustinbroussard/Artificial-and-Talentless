@@ -1,4 +1,6 @@
-<!DOCTYPE html><html lang="en" class="light"><head>
+<!DOCTYPE html>
+<html lang="en">
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#FFFFE3">
@@ -9,21 +11,32 @@
     <link rel="apple-touch-icon" href="assets/icon.png">
     <link rel="manifest" href="manifest.webmanifest">
     <title>Artificial -and- Talentless</title>
+    <script>
+      (function () {
+        const KEY = 'app:theme';
+        const stored = localStorage.getItem(KEY) || 'system';
+        const resolved = stored === 'system'
+          ? (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+          : stored;
+        const root = document.documentElement;
+        root.setAttribute('data-theme', resolved);
+        root.style.colorScheme = resolved;
+      })();
+    </script>
     <!-- Tailwind CSS CDN for styling -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Google Fonts: Special Elite for that vintage typewriter feel -->
-    <link href="https://fonts.googleapis.com/css2?family=Special+Elite&amp;display=swap" rel="stylesheet">
-    
-<link rel="stylesheet" href="style.css"></head>
+    <link href="https://fonts.googleapis.com/css2?family=Special+Elite&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
 <body>
-    <div id="header-content" class="global"> <div id="theme-toggle-switch-container">
-           <button id="theme-toggle" aria-pressed="false" aria-label="Toggle theme">
-  <i class="fas fa-sun" id="light-icon"></i>
-  <i class="fas fa-moon" id="dark-icon"></i>
-</button>
-        </div>
+    <div id="header-content" class="global">
+        <button id="theme-toggle" type="button" aria-pressed="false" aria-label="Toggle theme" class="icon-btn">
+          <i class="fas fa-sun" aria-hidden="true"></i>
+          <i class="fas fa-moon" aria-hidden="true"></i>
+        </button>
     </div>
     <!-- Container for the logo, fixed at the top of the viewport -->
     <div id="logo-container">
@@ -41,12 +54,11 @@
 
     <!-- Footer for the button, fixed at the bottom -->
     <div id="button-footer">
-        <button id="get-started-button"class="nav-button">Get Started</button>
+        <button id="get-started-button" class="nav-button">Get Started</button>
     </div>
 
-    
-
-
-
-<script src="js/theme.js"></script>
-<script src="js/index.js"></script></body></html>
+    <script src="js/index.js"></script>
+    <script src="js/pwa.js"></script>
+    <script src="js/theme.js"></script>
+</body>
+</html>

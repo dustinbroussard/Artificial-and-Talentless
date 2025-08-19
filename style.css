@@ -6,22 +6,21 @@
 /* 1) CSS Variables (light mode defaults) */
 :root {
   /* Palette */
-  --bg: #FFFFE3;        /* light cream (was #FFFFE3 / #F7F7D3 mix) */
+  --bg: #FFFFE3;
   --bg-alt: #F7F7D3;
   --text: #000000;
   --text-muted: #1A1A1A;
-  --accent: #000000;    /* primary accent for generic buttons */
+  --accent: #000000;
   --accent-contrast: #ffffff;
   --border: #000000;
   --shadow: rgba(0,0,0,.12);
 
-  /* Dark mode palette */
-  --bg-dark: #000000;
-  --bg-alt-dark: #1A1A1A;
-  --text-dark: #FFFFE3;
-  --accent-dark: #FFFFE3;
-  --border-dark: #FFFFE3;
-  --shadow-dark: rgba(247,247,211,.16);
+  /* Layout */
+  --max-content: 500px;
+  --logo-max: 350px;
+  --logo-max-lg: 200px;
+  --page-pad-top: 120px;
+  --page-pad-bot: 70px;
 
   /* Sizing + radius */
   --radius: 10px;
@@ -44,46 +43,36 @@
   --fs-sm: .95rem;
   --fs-md: 1rem;
   --fs-lg: 1.3rem;
-  --fs-xl: 3rem;   /* h1 base */
-  --fs-xxl: 5rem;  /* h1 on mobile hero */
-  --fs-larger: 1.5rem;  /* h1 on mobile hero */
-  --fs-xxxl: 2rem; /* add this so h3 doesn’t reference an undefined var */
+  --fs-xl: 3rem;
+  --fs-xxl: 5rem;
+  --fs-larger: 1.5rem;
+  --fs-xxxl: 2rem;
 }
 
-  /* Layout */
-  --max-content: 500px;
-  --logo-max: 350px;
-  --logo-max-lg: 200px;
-  --page-pad-top: 120px;   /* space for fixed header/logo */
-  --page-pad-bot: 70px;    /* space for fixed footer */
-}
-
-/* 2) Dark mode: flip variables by scoping to body.dark-mode */
-body.dark-mode {
-  --bg: var(--bg-dark);
-  --bg-alt: var(--bg-alt-dark);
-  --text: var(--text-dark);
-  --text-muted: var(--text-dark);
-  --accent: var(--accent-dark);
+/* Dark-mode overrides */
+[data-theme="dark"] {
+  --bg: #000000;
+  --bg-alt: #1A1A1A;
+  --text: #FFFFE3;
+  --text-muted: #FFFFE3;
+  --accent: #FFFFE3;
   --accent-contrast: #121212;
-  --border: var(--border-dark);
-  --shadow: var(--shadow-dark);
+  --border: #FFFFE3;
+  --shadow: rgba(247,247,211,.16);
 }
 
 /* 3) Base / Reset-ish */
-*,
-*::before,
-*::after { box-sizing: border-box; }
+*, *::before, *::after { box-sizing: border-box; }
 
 html, body {
+  background: var(--bg);
+  color: var(--text);
   height: 100%;
 }
 
 body {
   margin: 0;
   font-family: var(--font-ui);
-  background-color: var(--bg);
-  color: var(--text);
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -258,7 +247,7 @@ h1 {
   margin: 0 0 var(--space-6);
   text-align: center;
 }
-body.dark-mode h1 { color: var(--text); }
+[data-theme='dark'] h1 { color: var(--text); }
 
 p, .intro-text, .content-display {
   font-size: var(--fs-lg);
@@ -345,7 +334,7 @@ select {
   padding-right: 34px;
   background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 256 512%22%3E%3Cpath fill=%22%230A0518%22 d=%22M192 424.4l-96-96 96-96 22.6 22.6-67.4 67.4 67.4 67.4z%22/%3E%3C/svg%3E');
 }
-body.dark-mode select {
+[data-theme='dark'] select {
   background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 256 512%22%3E%3Cpath fill=%22%23FFFFE3%22 d=%22M192 424.4l-96-96 96-96 22.6 22.6-67.4 67.4 67.4 67.4z%22/%3E%3C/svg%3E');
 }
 
@@ -361,7 +350,7 @@ body.dark-mode select {
   width: 18px; height: 18px;
   accent-color: var(--text);
 }
-body.dark-mode .checkbox-container input[type="checkbox"] {
+[data-theme='dark'] .checkbox-container input[type="checkbox"] {
   accent-color: var(--text);
 }
 .checkbox-container label {
@@ -411,7 +400,7 @@ body.dark-mode .checkbox-container input[type="checkbox"] {
 }
 @keyframes spin { to { transform: rotate(360deg); } }
 
-body.dark-mode .spinner {
+[data-theme='dark'] .spinner {
   border-color: rgba(247,247,211,.2);
   border-left-color: var(--text);
 }
@@ -493,31 +482,22 @@ body.dark-mode .spinner {
 }
 
 /* 17) Theme toggle icons */
-#theme-toggle-icons {
+#theme-toggle {
   cursor: pointer;
   font-size: 1.1rem;
   padding: 5px;
   display: flex;
   gap: 10px;
   align-items: center;
-}
-
-#light-icon, #dark-icon {
-  transition: all 0.3s ease;
+  background: none;
+  border: none;
   color: var(--text);
 }
 
-#dark-icon {
-  display: none;
-}
-
-body.dark-mode #light-icon {
-  display: none;
-}
-
-body.dark-mode #dark-icon {
-  display: inline-block;
-}
+#theme-toggle .fa-sun { display: inline; }
+#theme-toggle .fa-moon { display: none; }
+[data-theme='dark'] #theme-toggle .fa-sun { display: none; }
+[data-theme='dark'] #theme-toggle .fa-moon { display: inline; }
 
 #content-type-select {
   align-content: center;
