@@ -47,22 +47,35 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// Small helper to normalize navigation requests so redirects are followed
+// Helper to check if a request is for an external resource
+function isExternalRequest(url) {
+  return new URL(url).origin !== location.origin;
+}
+
+// Small helper to normalize requests
 function normalizeRequest(request) {
-  // Only tweak navigations; other requests can pass through as-is
+  // For external requests, force cors mode
+  if (isExternalRequest(request.url)) {
+    return new Request(request.url, {
+      method: 'GET',
+      headers: request.headers,
+      mode: 'cors',
+      credentials: 'omit',
+      redirect: 'follow',
+      referrer: request.referrer,
+      referrerPolicy: request.referrerPolicy
+    });
+  }
+  
   if (request.mode === 'navigate') {
     return new Request(request.url, {
       method: 'GET',
       headers: request.headers,
-      // Keep same-origin; you can also use 'cors' if needed
       mode: 'same-origin',
-      redirect: 'follow', // <- important
+      redirect: 'follow',
       credentials: request.credentials,
-      cache: request.cache,
       referrer: request.referrer,
-      referrerPolicy: request.referrerPolicy,
-      integrity: request.integrity,
-      keepalive: request.keepalive
+      referrerPolicy: request.referrerPolicy
     });
   }
   return request;
@@ -73,21 +86,21 @@ self.addEventListener('fetch', (event) => {
 
   event.respondWith((async () => {
     const normalizedRequest = normalizeRequest(event.request);
+    const isExternal = isExternalRequest(event.request.url);
     const isNav = normalizedRequest.mode === 'navigate';
     
     try {
-      // First try cache for non-nav requests
-      if (!isNav) {
-        const cached = await caches.match(normalizedRequest);
+      // First try cache (except for external and navigation requests)
+      if (!isExternal && !isNav) {
+        const cached = await caches.match(normalizedRequest, { ignoreSearch: true });
         if (cached) return cached;
       }
 
-      // Try network with explicit redirect following
-      // Use the normalized request directly to preserve all properties
+      // Try network
       const networkResponse = await fetch(normalizedRequest);
 
-      // Cache successful non-nav responses
-      if (!isNav && networkResponse.status === 200) {
+      // Cache successful responses (except external resources)
+      if (!isExternal && networkResponse.status === 200) {
         const cache = await caches.open(CACHE_NAME);
         cache.put(normalizedRequest, networkResponse.clone());
       }
