@@ -13,6 +13,12 @@
     const btn = document.getElementById('theme-toggle');
     if (btn) btn.setAttribute('aria-pressed', String(theme === 'dark'));
 
+    // Update logo based on theme
+    const logos = document.querySelectorAll('img[data-theme-src]');
+    logos.forEach(img => {
+      img.src = img.dataset[`theme${theme.charAt(0).toUpperCase() + theme.slice(1)}Src`] || img.src;
+    });
+
     localStorage.setItem(KEY, preference);
   };
 
