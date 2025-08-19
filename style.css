@@ -47,6 +47,8 @@
   --fs-xl: 3rem;   /* h1 base */
   --fs-xxl: 5rem;  /* h1 on mobile hero */
   --fs-larger: 1.5rem;  /* h1 on mobile hero */
+  --fs-xxxl: 2rem; /* add this so h3 doesn’t reference an undefined var */
+}
 
   /* Layout */
   --max-content: 500px;
@@ -129,8 +131,7 @@ body {
 
 
 #logo {
-  max-width: var(--logo-max);
-  height: auto;
+  max-width: 100%;
   display: block;
   margin: 0 auto;
 }
@@ -174,7 +175,8 @@ body {
   flex-direction: column;
   justify-content: normal;   /* vertical center */
   align-items: center;       /* horizontal center */
-  width: 100%;
+  width: 90%;
+  margin-top: 7rem;
   max-width: var(--max-content);
   padding: 0 var(--space-4);
   text-align: center;
@@ -187,7 +189,7 @@ body {
   flex-direction: column;
   justify-content: center;   /* vertical center */
   align-items: center;       /* horizontal center */
-  width: 100%;
+  width: 80%;
   max-width: var(--max-content);
   padding: 0 var(--space-0);
   text-align: center;
@@ -215,11 +217,11 @@ body {
   flex-direction: column;
   justify-content: center;   /* vertical center */
   align-items: center;       /* horizontal center */
-  width: 100%;
+  width: 80%;
   max-width: var(--max-content);
   padding: 0 var(--space-0);
   text-align: center;
-  margin-bottom: 0rem;
+  margin-top: 15rem;
   gap: var(--space-4);
 }
 
@@ -299,7 +301,7 @@ button:disabled, .nav-button:disabled {
   opacity: .6;
 }
 
-/* Variant: .nav-button (kept for compatibility, but it inherits above) */-co
+/* Variant: .nav-button (kept for compatibility, but it inherits above) */
 .nav-button {
   flex-grow: 1;
 }
@@ -440,11 +442,12 @@ body.dark-mode .spinner {
 .question-container .question {
   font-size: var(--fs-lg);
   margin-bottom: 1.3rem;
+  width: 80%;
 }
 .options-container {
   display: grid;
   gap: var(--space-2);
-  width: 100%;
+  width: 80%;
   grid-template-columns: 1fr 1fr;  /* 2-up on mobile */
 }
 .option-button {
@@ -467,6 +470,7 @@ body.dark-mode .spinner {
 .open-ended-container textarea {
   min-height: 120px;
   resize: vertical;
+  width: 80%;
 }
 
 /* 16) Intro + Generator text blocks */
@@ -537,4 +541,18 @@ h3 {
 /* 19) Utility helpers */
 .hidden { display: none !important; }
 .center { text-align: center; }
+
+
+/* Fix misaligned header (global) */
+#header-content.global {
+  position: fixed;
+  top: 10px;
+  left: 135%;           /* was 10% */
+  transform: translateX(-50%);
+  z-index: 10;
+  width: 100%;
+  max-width: 100%;
+  text-align: center;
+  padding: 0 var(--space-5);
+}
 
