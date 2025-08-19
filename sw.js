@@ -72,44 +72,37 @@ self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
 
   event.respondWith((async () => {
-    const isNav = event.request.mode === 'navigate';
-
-    // For navigations, always fetch with redirect: 'follow' to avoid the manual/redirected clash
-    if (isNav) {
-      try {
-        // Go straight to network and follow redirects. Do not cache navigations.
-        return await fetch(event.request.url, { redirect: 'follow' });
-      } catch (e) {
-        // Offline SPA fallback
-        const cachedIndex = await caches.match('/index.html');
-        if (cachedIndex) return cachedIndex;
-        throw e;
-      }
-    }
-
-    // Non-navigation requests: cache-first, then network
-    const cached = await caches.match(event.request);
-    if (cached) return cached;
+    const normalizedRequest = normalizeRequest(event.request);
+    const isNav = normalizedRequest.mode === 'navigate';
 
     try {
-      const network = await fetch(event.request);
+      // Always try network first for navigation requests
+      if (isNav) {
+        const network = await fetch(normalizedRequest);
+        return network.redirected 
+          ? await fetch(network.url, { redirect: 'follow' })
+          : network;
+      }
 
-      // If server responded with a redirect (opaqueredirect or redirected), don't cache it, and
-      // re-fetch the final URL with redirect: 'follow' so we return a non-redirected response.
-      if (network.redirected || network.type === 'opaqueredirect') {
+      // For other requests: cache first, then network
+      const cached = await caches.match(normalizedRequest);
+      if (cached) return cached;
+
+      const network = await fetch(normalizedRequest);
+      
+      if (network.redirected) {
         return fetch(network.url, { redirect: 'follow' });
       }
 
-      if (network && network.status === 200) {
-        const copy = network.clone();
+      if (network.status === 200) {
         const cache = await caches.open(CACHE_NAME);
-        cache.put(event.request, copy).catch(() => {});
+        await cache.put(normalizedRequest, network.clone());
       }
 
       return network;
     } catch (e) {
-      // Last-ditch cache fallback (ignoring query string helps with hashed/cdn variants)
-      const fallback = await caches.match(event.request, { ignoreSearch: true });
+      // Fallback to cache when offline
+      const fallback = await caches.match(normalizedRequest, { ignoreSearch: true });
       if (fallback) return fallback;
       throw e;
     }
