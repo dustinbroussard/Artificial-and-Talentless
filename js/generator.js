@@ -1,9 +1,8 @@
 
-        document.addEventListener('DOMContentLoaded', async () => {
-            // Apply theme based on localStorage
-            const theme = localStorage.getItem('theme');
-            if (theme === 'dark') {
-                document.body.classList.add('dark-mode');
+document.addEventListener('DOMContentLoaded', async () => {
+            if (localStorage.getItem('isOnboarded') !== 'true') {
+                window.location.href = 'index.html';
+                return;
             }
 
             const displayContentElement = document.getElementById('display-content');
@@ -29,25 +28,6 @@
                 } else if (callback) setTimeout(callback, 1000); // Longer pause after typing
             }
 
-            // --- Custom Message Box (reused from onboarding) ---
-            function displayMessage(message, type = "info") {
-                const messageBox = document.createElement('div');
-                messageBox.classList.add('message-box', type);
-                messageBox.textContent = message;
-                document.body.appendChild(messageBox);
-
-                messageBox.style.opacity = 0; // Start invisible for transition
-                if (document.body.classList.contains('dark-mode')) {
-                    messageBox.style.backgroundColor = '#FFFFE3';
-                    messageBox.style.color = '#000000';
-                }
-
-                setTimeout(() => { messageBox.style.opacity = 1; }, 10);
-                setTimeout(() => {
-                    messageBox.style.opacity = 0;
-                    messageBox.addEventListener('transitionend', () => messageBox.remove());
-                }, 3000);
-            }
 
             // --- Content Generation Prompts ---
             const prompts = {
@@ -115,6 +95,7 @@
             };
 
             async function generateContent() {
+                generateNewButton.disabled = true;
                 // IMPORTANT: Re-read appSettings and userProfile from localStorage on each call
                 const storedUserName = localStorage.getItem('userName') || 'Anonymous Being';
                 const userProfile = JSON.parse(localStorage.getItem('userProfile') || '{}');
@@ -124,17 +105,15 @@
                 const selectedModel = appSettings.selectedModel;
                 const contentType = appSettings.contentType || 'Random'; // Default to Random if not set
 
-                console.log("Generator: Current appSettings being used:", appSettings); // Diagnostic log
-                console.log("Generator: API Key present?", !!openrouterApiKey); // Diagnostic log
-                console.log("Generator: Selected Model:", selectedModel); // Diagnostic log
 
                 // Validate essential settings
                 if (!openrouterApiKey || !selectedModel) {
-                    displayMessage("API Key or Model not set. Please go to Settings.", "error");
+                    showMessage("API Key or Model not set. Please go to Settings.", "error");
                     loadingSpinner.style.display = 'none';
                     displayContentElement.textContent = "Please configure your AI settings via the 'Settings' button below.";
                     displayContentElement.style.visibility = 'visible';
                     buttonFooter.style.visibility = 'visible';
+                    generateNewButton.disabled = false;
                     return; // Exit function if settings is missing
                 }
 
@@ -171,7 +150,7 @@
                 // Select the specific prompt based on content type
                 const selectedPrompts = prompts[contentType];
                 if (!selectedPrompts || selectedPrompts.length === 0) {
-                    displayMessage("Error: Content type not found or no prompts available for this type.", "error");
+                    showMessage("Error: Content type not found or no prompts available for this type.", "error");
                     loadingSpinner.style.display = 'none';
                     buttonFooter.style.visibility = 'visible';
                     displayContentElement.textContent = "Error: Invalid content type selected.";
@@ -224,16 +203,18 @@
                     displayContentElement.textContent = ''; // Clear loading message
                     displayContentElement.style.visibility = 'visible'; // Ensure visibility for typewriter
                     typeWriter(displayContentElement, generatedText, 0, () => {
-                        buttonFooter.style.visibility = 'visible'; // Show buttons after typing
+                        buttonFooter.style.visibility = 'visible';
+                        generateNewButton.disabled = false;
                     });
 
                 } catch (error) {
                     console.error("Error generating content:", error);
-                    displayMessage(`Failed to generate content: ${error.message}. Check your API Key/Model settings.`, "error");
+                    showMessage(`Failed to generate content: ${error.message}. Check your API Key/Model settings.`, "error");
                     loadingSpinner.style.display = 'none';
-                    displayContentElement.textContent = "Error generating content. Maybe your life is too boring for AI?"; // Fallback message
+                    displayContentElement.textContent = "Error generating content. Maybe your life is too boring for AI?";
                     displayContentElement.style.visibility = 'visible';
                     buttonFooter.style.visibility = 'visible';
+                    generateNewButton.disabled = false;
                 }
             }
 

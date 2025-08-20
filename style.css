@@ -108,8 +108,8 @@ body {
 
 #header-content.global {
   position: fixed;
-  top: 5px;
-  left: 10%;
+  top: 10px;
+  left: 50%;
   transform: translateX(-50%);
   z-index: 10;
   width: 100%;
@@ -288,6 +288,11 @@ button:disabled, .nav-button:disabled {
   cursor: not-allowed;
   transform: none !important;
   opacity: .6;
+}
+
+button:focus-visible, .nav-button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
 }
 
 /* Variant: .nav-button (kept for compatibility, but it inherits above) */
@@ -533,18 +538,6 @@ h3 {
 
 
 /* Fix misaligned header (global) */
-#header-content.global {
-  position: fixed;
-  top: 10px;
-  left: 135%;           /* was 10% */
-  transform: translateX(-50%);
-  z-index: 10;
-  width: 100%;
-  max-width: 100%;
-  text-align: center;
-  padding: 0 var(--space-5);
-}
-
 .icon-btn {
   background: none;
   text-align: center;

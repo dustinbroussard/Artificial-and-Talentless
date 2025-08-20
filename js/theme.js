@@ -1,40 +1,39 @@
-const THEME_KEY = 'app:theme';
+(function () {
+  const KEY = 'app:theme';
+  const media = window.matchMedia('(prefers-color-scheme: dark)');
+  const system = () => (media.matches ? 'dark' : 'light');
 
-export function applyTheme(preference) {
-    const media = window.matchMedia('(prefers-color-scheme: dark)');
-    const systemTheme = () => (media.matches ? 'dark' : 'light');
-    const theme = preference === 'system' ? systemTheme() : preference;
-    
+  function apply(pref) {
+    const theme = pref === 'system' ? system() : pref;
     const root = document.documentElement;
     root.setAttribute('data-theme', theme);
     root.style.colorScheme = theme;
-    localStorage.setItem(THEME_KEY, preference);
+    localStorage.setItem(KEY, pref);
 
-    // Update theme toggle button state
-    document.querySelectorAll('[data-theme-toggle]').forEach(btn => {
-        btn.setAttribute('aria-pressed', theme === 'dark');
+    document.querySelectorAll('img[data-dark-src][data-light-src]').forEach(img => {
+      const next = theme === 'dark' ? img.dataset.darkSrc : img.dataset.lightSrc;
+      if (next && img.src !== next) {
+        img.removeAttribute('srcset');
+        img.src = next;
+      }
     });
 
-    // Update logo
-    const logo = document.getElementById('logo');
-    if (logo && logo.dataset.darkSrc) {
-        logo.src = theme === 'dark' ? logo.dataset.darkSrc : logo.dataset.darkSrc.replace('-dark', '');
-    }
-}
+    const btn = document.getElementById('theme-toggle');
+    if (btn) btn.setAttribute('aria-pressed', String(theme === 'dark'));
+  }
 
-export function initTheme() {
-    const savedTheme = localStorage.getItem(THEME_KEY) || 'light';
-    applyTheme(savedTheme);
-    
-    // Setup media query listener for system theme changes
-    const media = window.matchMedia('(prefers-color-scheme: dark)');
+  function init() {
+    const pref = localStorage.getItem(KEY) || 'system';
+    apply(pref);
     media.addEventListener('change', () => {
-        if (localStorage.getItem(THEME_KEY) === 'system') {
-            applyTheme('system');
-        }
+      if ((localStorage.getItem(KEY) || 'system') === 'system') apply('system');
     });
-}
-
-// Initialize theme when module is imported
-document.addEventListener('DOMContentLoaded', initTheme);
-
+    const btn = document.getElementById('theme-toggle');
+    if (btn) btn.addEventListener('click', () => {
+      const current = localStorage.getItem(KEY) || 'system';
+      const resolved = current === 'dark' ? 'light' : 'dark';
+      apply(resolved);
+    });
+  }
+  document.addEventListener('DOMContentLoaded', init);
+})();

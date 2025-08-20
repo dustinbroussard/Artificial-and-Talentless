@@ -20,3 +20,12 @@ This project is a Progressive Web App that offers light and dark themes with a s
 3. Follow the prompts, then execute `bubblewrap build` to create the signed APK.
 4. The resulting APK can be uploaded to the Play Store or sideloaded on devices.
 
+## Production Tailwind build
+The project currently pulls Tailwind from the CDN during development. For a production build:
+
+1. Install build tools: `npm i -D tailwindcss postcss autoprefixer vite`
+2. Run `npx tailwindcss init -p` and set `content` to `./*.{html,js}`
+3. Create `src/styles/tailwind.css` with `@tailwind base; @tailwind components; @tailwind utilities;`
+4. Build with `npx tailwindcss -i src/styles/tailwind.css -o style.css --minify`
+5. Remove `<script src="https://cdn.tailwindcss.com"></script>` from HTML files.
+

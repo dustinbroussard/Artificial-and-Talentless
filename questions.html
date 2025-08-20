@@ -5,18 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="manifest" href="manifest.webmanifest">
     <title>Artificial -and- Talentless - Onboarding</title>
-    <script>
-      (function () {
-        const KEY = 'app:theme';
-        const stored = localStorage.getItem(KEY) || 'system';
-        const resolved = stored === 'system'
-          ? (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
-          : stored;
-        const root = document.documentElement;
-        root.setAttribute('data-theme', resolved);
-        root.style.colorScheme = resolved;
-      })();
-    </script>
     <!-- Tailwind CSS CDN for styling -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Font Awesome for icons -->
@@ -34,8 +22,10 @@
     </div>
     <!-- Container for the logo, fixed at the top of the viewport -->
     <div id="logo-container">
-        <!-- Using logo.jpg as per previous file uploads, added onerror for robustness -->
-        <img id="logo" src="assets/logo.png" alt="Artificial -and- Talentless Logo" onerror="this.onerror=null; this.src='https://placehold.co/350x80/1A1A1A/FFFFE3?text=Logo'" data-dark-src="assets/logo-dark.png">
+        <img id="logo" src="assets/logo.png"
+             data-light-src="assets/logo.png"
+             data-dark-src="assets/logo-dark.png"
+             alt="Artificial —and— Talentless Logo">
     </div>
 
     <!-- Main content area for displaying questions, centered vertically -->
@@ -118,10 +108,11 @@
 
     <!-- Global Footer for Navigation Buttons, fixed at the bottom -->
     <div id="button-footer">
-        <button id="prev-button" class="nav-button">Prev</button>
-        <button id="next-button" class="nav-button">Next</button>
+        <button id="prev-button" class="nav-button" disabled>Prev</button>
+        <button id="next-button" class="nav-button" disabled>Next</button>
     </div>
 
+    <script src="js/message.js"></script>
     <script src="js/questions.js"></script>
     <script src="js/pwa.js"></script>
     <script src="js/theme.js"></script>

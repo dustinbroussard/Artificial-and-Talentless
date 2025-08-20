@@ -5,18 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="manifest" href="manifest.webmanifest">
     <title>Artificial -and- Talentless - Settings</title>
-    <script>
-      (function () {
-        const KEY = 'app:theme';
-        const stored = localStorage.getItem(KEY) || 'system';
-        const resolved = stored === 'system'
-          ? (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
-          : stored;
-        const root = document.documentElement;
-        root.setAttribute('data-theme', resolved);
-        root.style.colorScheme = resolved;
-      })();
-    </script>
     <!-- Tailwind CSS CDN for styling -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Font Awesome for icons -->
@@ -83,10 +71,11 @@
     <!-- Global Footer for Navigation Buttons, fixed at the bottom -->
     <div id="button-footer">
         <button id="back-to-generator-button" class="nav-button">Back</button>
-        <button id="save-settings-button" class="nav-button">Save</button>
+        <button id="save-settings-button" class="nav-button" disabled>Save</button>
     </div>
 
     <!-- At the bottom of settings.html, before </body> -->
+    <script src="js/message.js"></script>
     <script src="js/settings.js"></script>
     <script src="js/pwa.js"></script>
     <script src="js/theme.js"></script>
