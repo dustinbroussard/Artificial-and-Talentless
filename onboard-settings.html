@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="manifest" href="manifest.webmanifest">
     <title>Artificial -and- Talentless - Settings</title>
     <!-- Tailwind CSS CDN for styling -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.tailwindcss.com" onerror="console.warn('Tailwind CDN failed to load')"></script>
     <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Google Fonts: Special Elite for that vintage typewriter feel -->
@@ -20,6 +20,7 @@
             <i class="fas fa-moon" aria-hidden="true"></i>
         </button>
     </div>
+    <h1 class="sr-only">Setup</h1>
     <!-- Container for the logo, fixed at the top of the viewport -->
     <div id="logo-container">
         <img id="logo" src="assets/logo.png"

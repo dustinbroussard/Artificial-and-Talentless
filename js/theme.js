@@ -10,13 +10,33 @@
     root.style.colorScheme = theme;
     localStorage.setItem(KEY, pref);
 
-    document.querySelectorAll('img[data-dark-src][data-light-src]').forEach(img => {
-      const next = theme === 'dark' ? img.dataset.darkSrc : img.dataset.lightSrc;
-      if (next && img.src !== next) {
-        img.removeAttribute('srcset');
-        img.src = next;
-      }
-    });
+    // swap logos/images based on theme
+    document
+      .querySelectorAll('img[data-dark-src], img[data-light-src], img[data-theme-dark-src], img[data-theme-light-src], img[data-theme-src]')
+      .forEach((img) => {
+        let darkSrc =
+          img.getAttribute('data-theme-dark-src') ||
+          img.getAttribute('data-dark-src');
+        let lightSrc =
+          img.getAttribute('data-theme-light-src') ||
+          img.getAttribute('data-light-src') ||
+          img.getAttribute('src');
+        const themeSrc = img.getAttribute('data-theme-src');
+        if (themeSrc) {
+          const map = themeSrc.split(',').reduce((acc, pair) => {
+            const [k, v] = pair.split(':');
+            if (k && v) acc[k.trim()] = v.trim();
+            return acc;
+          }, {});
+          darkSrc = darkSrc || map.dark;
+          lightSrc = lightSrc || map.light;
+        }
+        const next = theme === 'dark' ? darkSrc : lightSrc;
+        if (next && img.src !== next) {
+          img.removeAttribute('srcset');
+          img.src = next;
+        }
+      });
 
     const btn = document.getElementById('theme-toggle');
     if (btn) btn.setAttribute('aria-pressed', String(theme === 'dark'));
@@ -49,4 +69,5 @@
   } else {
     document.addEventListener('DOMContentLoaded', init);
   }
+  window.setTheme = apply;
 })();

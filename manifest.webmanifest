@@ -2,7 +2,7 @@
   "name": "Artificial -and- Talentless",
   "short_name": "A-and-T",
   "description": "AI-powered personalized insult generator",
-  "start_url": "/",
+  "start_url": "./",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#FFFFE3",
@@ -26,7 +26,7 @@
     {
       "name": "Generate",
       "short_name": "Generate",
-      "url": "/generator.html",
+      "url": "generator.html",
       "icons": [
         { "src": "assets/icon.png", "sizes": "192x192", "type": "image/png" }
       ]

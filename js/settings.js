@@ -14,11 +14,13 @@ document.addEventListener('DOMContentLoaded', () => {
   const saveBtn = document.getElementById('save-settings-button');
 
   let allModels = [];
-  const debounce = (fn, delay = 500) => { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), delay); }; };
+  let lastKey = '';
+  const debounce = (fn, delay = 400) => { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), delay); }; };
 
   async function fetchModels() {
     const key = apiKeyInput.value.trim();
-    if (!key) return;
+    if (!key || key === lastKey) return;
+    lastKey = key;
     spinner.style.display = 'block';
     modelSelect.disabled = true;
     modelSelect.innerHTML = '<option value="">Loading models...</option>';
@@ -47,6 +49,9 @@ document.addEventListener('DOMContentLoaded', () => {
     if (filterFree.checked) models = models.filter(m => m.free);
     if (models.length === 0) {
       modelSelect.innerHTML = '<option value="">No models found</option>';
+      saveBtn.disabled = true;
+      saveBtn.title = filterFree.checked ? 'No free models available' : '';
+      if (filterFree.checked) showMessage('No free models available with this key.', 'info');
     } else {
       models.sort((a, b) => a.name.localeCompare(b.name));
       models.forEach(m => {
@@ -55,6 +60,7 @@ document.addEventListener('DOMContentLoaded', () => {
         opt.textContent = m.name;
         modelSelect.appendChild(opt);
       });
+      saveBtn.title = '';
     }
     const stored = JSON.parse(localStorage.getItem('appSettings') || '{}');
     if (stored.selectedModel) modelSelect.value = stored.selectedModel;
@@ -67,8 +73,18 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   apiKeyInput.addEventListener('input', () => { updateState(); debouncedFetch(); });
-  modelSelect.addEventListener('change', updateState);
-  contentTypeSelect.addEventListener('change', updateState);
+  modelSelect.addEventListener('change', () => {
+    updateState();
+    const appSettings = JSON.parse(localStorage.getItem('appSettings') || '{}');
+    appSettings.selectedModel = modelSelect.value;
+    localStorage.setItem('appSettings', JSON.stringify(appSettings));
+  });
+  contentTypeSelect.addEventListener('change', () => {
+    updateState();
+    const appSettings = JSON.parse(localStorage.getItem('appSettings') || '{}');
+    appSettings.contentType = contentTypeSelect.value;
+    localStorage.setItem('appSettings', JSON.stringify(appSettings));
+  });
   filterFree.addEventListener('change', populateModels);
 
   backBtn.addEventListener('click', () => { window.location.href = 'generator.html'; });

@@ -45,10 +45,15 @@ document.addEventListener('DOMContentLoaded', () => {
                     const optionsForThisQuestion = currentQuestionContainer.querySelectorAll('.option-button');
                     optionsForThisQuestion.forEach(opt => {
                         opt.classList.remove('selected');
+                        opt.setAttribute('aria-checked','false');
+                        opt.tabIndex = -1;
                         if (opt.getAttribute('data-answer') === selectedAnswer) {
                             opt.classList.add('selected');
+                            opt.setAttribute('aria-checked','true');
+                            opt.tabIndex = 0;
                         }
                     });
+                    if (!selectedAnswer && optionsForThisQuestion[0]) optionsForThisQuestion[0].tabIndex = 0;
                 }
                 // Restore open-ended text
                 else if (currentQuestionContainer.querySelector('textarea')) {
@@ -80,23 +85,48 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Event listeners for option buttons (multiple choice)
             optionButtons.forEach(button => {
+                button.setAttribute('role','radio');
+                button.setAttribute('aria-checked','false');
+                button.tabIndex = -1;
                 button.addEventListener('click', function() {
                     const questionId = this.getAttribute('data-question-id');
                     const answer = this.getAttribute('data-answer');
-
-                    // Deselect any previously selected options for this question
-                    const optionsForThisQuestion = this.closest('.options-container').querySelectorAll('.option-button');
-                    optionsForThisQuestion.forEach(opt => opt.classList.remove('selected'));
-
-                    // Select the clicked option
+                    const container = this.closest('.options-container');
+                    const optionsForThisQuestion = container.querySelectorAll('.option-button');
+                    optionsForThisQuestion.forEach(opt => {
+                        opt.classList.remove('selected');
+                        opt.setAttribute('aria-checked','false');
+                        opt.tabIndex = -1;
+                    });
                     this.classList.add('selected');
-
-                    // Save the answer to profileData
+                    this.setAttribute('aria-checked','true');
+                    this.tabIndex = 0;
                     userProfileData[questionId] = answer;
-
-                    // Enable next button after selection
                     updateNextButtonState();
                 });
+                button.addEventListener('keydown', (e) => {
+                    const container = button.closest('.options-container');
+                    const options = Array.from(container.querySelectorAll('.option-button'));
+                    let index = options.indexOf(button);
+                    if (['ArrowRight','ArrowDown'].includes(e.key)) {
+                        e.preventDefault();
+                        index = (index + 1) % options.length;
+                        options[index].focus();
+                    } else if (['ArrowLeft','ArrowUp'].includes(e.key)) {
+                        e.preventDefault();
+                        index = (index - 1 + options.length) % options.length;
+                        options[index].focus();
+                    } else if (e.key === ' ' || e.key === 'Enter') {
+                        e.preventDefault();
+                        button.click();
+                    }
+                });
+            });
+
+            document.querySelectorAll('.options-container').forEach(container => {
+                container.setAttribute('role','radiogroup');
+                const first = container.querySelector('.option-button');
+                if (first) first.tabIndex = 0;
             });
 
             // Event listeners for open-ended text areas
