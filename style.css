@@ -1,0 +1,561 @@
+/* ==========================================================================
+   Artificial —and— Talentless • Global Styles (consolidated)
+   Design goals: single source of truth, minimal duplication, dark-mode via vars
+   ========================================================================== */
+
+/* 1) CSS Variables (light mode defaults) */
+:root {
+  /* Palette */
+  --bg: #FFFFE3;
+  --bg-alt: #F7F7D3;
+  --text: #000000;
+  --text-muted: #1A1A1A;
+  --accent: #000000;
+  --accent-contrast: #ffffff;
+  --border: #000000;
+  --shadow: rgba(0,0,0,.12);
+
+  /* Layout */
+  --max-content: 500px;
+  --logo-max: 350px;
+  --logo-max-lg: 200px;
+  --page-pad-top: 120px;
+  --page-pad-bot: 70px;
+
+  /* Sizing + radius */
+  --radius: 10px;
+  --radius-sm: 6px;
+  --radius-lg: 16px;
+
+  /* Spacing */
+  --space-0: 0;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-7: 28px;
+  --space-8: 32px;
+
+  /* Typography */
+  --font-ui: 'Special Elite', monospace;
+  --fs-sm: .95rem;
+  --fs-md: 1rem;
+  --fs-lg: 1.3rem;
+  --fs-xl: 3rem;
+  --fs-xxl: 5rem;
+  --fs-larger: 1.5rem;
+  --fs-xxxl: 2rem;
+}
+
+/* Dark-mode overrides */
+[data-theme="dark"] {
+  --bg: #000000;
+  --bg-alt: #1A1A1A;
+  --text: #FFFFE3;
+  --text-muted: #FFFFE3;
+  --accent: #FFFFE3;
+  --accent-contrast: #121212;
+  --border: #FFFFE3;
+  --shadow: rgba(247,247,211,.16);
+}
+
+/* 3) Base / Reset-ish */
+*, *::before, *::after { box-sizing: border-box; }
+
+html, body {
+  background: var(--bg);
+  color: var(--text);
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-ui);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--page-pad-top) var(--space-5) var(--page-pad-bot);
+  overflow-x: hidden;
+  position: relative;
+}
+
+/* 4) Fixed header/logo (used across pages) */
+#logo-container, #header-content {
+  position: fixed;
+  top: 0px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  width: 100%;
+  max-width: 100%;
+  text-align: center;
+  padding: 0 var(--space-5);
+}
+
+#header-content.settings {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  width: 100%;
+  max-width: 100%;
+  padding: 0 var(--space-5);
+}
+
+#header-content.global {
+  position: fixed;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  width: 100%;
+  max-width: 100%;
+  text-align: center;
+  padding: 0 var(--space-5);
+}
+
+
+#logo {
+  max-width: 100%;
+  display: block;
+  margin: 0 auto;
+}
+
+/* optional settings header title + switch inline */
+#header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: var(--max-content);
+}
+#settings-main-title {
+  font-size: var(--fs-lg);
+  margin: 0;
+}
+
+#name-main {
+  font-size: var(--fs-larger);
+  margin-bottom: 1rem;
+  margin: 0;
+}
+
+/* 5) Main content container */
+#main-content-area {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;   /* vertical center */
+  align-items: center;       /* horizontal center */
+  width: 100%;
+  max-width: var(--max-content);
+  padding: 0 var(--space-4);
+  text-align: center;
+  margin-bottom: 10rem;
+  gap: var(--space-4);
+}
+
+#main-content-area.settings {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: normal;   /* vertical center */
+  align-items: center;       /* horizontal center */
+  width: 100%;
+  margin-bottom: 5rem;
+  max-width: var(--max-content);
+  padding: 0 var(--space-4);
+  text-align: center;
+  gap: var(--space-4);
+}
+
+#main-content-area.generate {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;   /* vertical center */
+  align-items: center;       /* horizontal center */
+  width: 95%;
+  max-width: var(--max-content);
+  padding: 0 var(--space-0);
+  text-align: center;
+  margin-bottom: 10rem;
+  gap: var(--space-4);
+}
+
+#main-content-area.questions {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;   /* vertical center */
+  align-items: center;       /* horizontal center */
+  width: 100%;
+  max-width: var(--max-content);
+  padding: 0 var(--space-0);
+  text-align: center;
+  margin-bottom: 5rem;
+  gap: var(--space-4);
+}
+
+#main-content-area.onboarding {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;   /* vertical center */
+  align-items: center;       /* horizontal center */
+  width: 100%;
+  max-width: var(--max-content);
+  padding: 0 var(--space-0);
+  text-align: center;
+  margin-top: 10rem;
+  gap: var(--space-4);
+}
+
+/* 6) Footer with nav buttons (fixed) */
+#button-footer {
+  position: fixed;
+  bottom: 0;
+  justify-content: center;
+  left: 0;
+  right: 0;
+  padding: var(--space-4) var(--space-5);
+  display: flex;
+  gap: var(--space-2);
+  background: linear-gradient(to top, var(--bg) 60%, transparent);
+}
+
+
+#delete-data-button {
+  background: #9E001C;
+  margin-top: 1rem;
+  color: #FFFFE3;
+  padding: var(--space-3) var(--space-5);
+  border-radius: var(--radius);
+  box-shadow: 0 8px 20px var(--shadow);
+  transition: opacity .2s ease, transform .2s ease;
+  z-index: 20;
+}
+
+/* 7) Typography */
+h1 {
+  color: var(--text);
+  font-size: var(--fs-xxl);
+  line-height: 1.1;
+  margin: 0 0 var(--space-6);
+  text-align: center;
+}
+[data-theme='dark'] h1 { color: var(--text); }
+
+p, .intro-text, .content-display {
+  font-size: var(--fs-lg);
+  margin: 0;
+}
+
+.data-info {
+  font-size: var(--fs-sm);
+}
+
+/* 8) Buttons (unified) */
+button, .nav-button {
+  background-color: var(--accent-contrast);
+  color: var(--accent);
+  border: none;
+  padding: 15px 30px;
+  font-size: 1.1em;
+  font-family: var(--font-ui);
+  cursor: pointer;
+  border-radius: var(--radius);
+  width: 100%;
+  max-width: 300px;
+  transition: transform .12s ease, box-shadow .12s ease, opacity .2s ease, background-color .2s ease, color .2s ease;
+  box-shadow: 0 4px 6px var(--shadow);
+}
+
+button:hover:not(:disabled), .nav-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 8px var(--shadow);
+}
+button:active, .nav-button:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px var(--shadow);
+}
+button:disabled, .nav-button:disabled {
+  background-color: #ccc;
+  color: #666;
+  cursor: not-allowed;
+  transform: none !important;
+  opacity: .6;
+}
+
+button:focus-visible, .nav-button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* Variant: .nav-button (kept for compatibility, but it inherits above) */
+.nav-button {
+  flex-grow: 1;
+}
+
+/* 9) Inputs */
+.input-field,
+input[type="text"],
+textarea,
+select {
+  width: 100%;
+  padding: 10px 12px;
+  margin: 0 0 var(--space-3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-ui);
+  font-size: var(--fs-md);
+  background-color: var(--bg-alt);
+  color: var(--text);
+  outline: none;
+}
+
+input[type="text"]::placeholder,
+textarea::placeholder { opacity: .7; color: var(--text-muted); }
+
+.input-field:focus,
+input[type="text"]:focus,
+textarea:focus,
+select:focus {
+  border-color: var(--border);
+  box-shadow: 0 0 0 3px rgba(0,0,0,.08);
+}
+
+/* Select custom arrow (light/dark) */
+select {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 12px;
+  padding-right: 34px;
+  background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 256 512%22%3E%3Cpath fill=%22%230A0518%22 d=%22M192 424.4l-96-96 96-96 22.6 22.6-67.4 67.4 67.4 67.4z%22/%3E%3C/svg%3E');
+}
+[data-theme='dark'] select {
+  background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 256 512%22%3E%3Cpath fill=%22%23FFFFE3%22 d=%22M192 424.4l-96-96 96-96 22.6 22.6-67.4 67.4 67.4 67.4z%22/%3E%3C/svg%3E');
+}
+
+/* 10) Checkbox row */
+.checkbox-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  margin-bottom: var(--space-4);
+}
+.checkbox-container input[type="checkbox"] {
+  width: 18px; height: 18px;
+  accent-color: var(--text);
+}
+[data-theme='dark'] .checkbox-container input[type="checkbox"] {
+  accent-color: var(--text);
+}
+.checkbox-container label {
+  font-size: var(--fs-sm);
+  color: var(--text);
+}
+
+/* 11) Settings sections */
+.setting-section {
+  width: 100%;
+  margin-bottom: var(--space-6);
+  margin-top: -1em;
+  padding: var(--space-4);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background-color: var(--bg-alt);
+  box-shadow: 0 2px 5px var(--shadow);
+}
+.setting-title {
+  font-size: var(--fs-md);
+  font-weight: bold;
+  color: var(--text);
+  margin: 0 0 var(--space-3);
+  text-align: center;
+  line-height: 1.3;
+}
+
+/* 12) API link */
+.api-link {
+  font-size: .9em;
+  color: var(--text);
+  text-decoration: underline;
+  margin-top: var(--space-2);
+  display: block;
+  text-align: center;
+}
+
+/* 13) Spinner */
+.spinner {
+  border: 4px solid rgba(0,0,0,.1);
+  border-left-color: var(--text);
+  border-radius: 50%;
+  width: 20px; height: 20px;
+  animation: spin 1s linear infinite;
+  margin: var(--space-3) auto;
+  display: none;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+[data-theme='dark'] .spinner {
+  border-color: rgba(247,247,211,.2);
+  border-left-color: var(--text);
+}
+
+/* 14) Message box (toast / confirm container styles set in JS inline; we style base) */
+.message-box {
+  position: fixed;
+  left: 50%;
+  top: 75%;
+  bottom: calc(var(--page-pad-bot) + 16px);
+  transform: translateX(-50%);
+  background: var(--bg-alt);
+  color: var(--text);
+  padding: var(--space-3) var(--space-5);
+  border-radius: var(--radius);
+  box-shadow: 0 8px 20px var(--shadow);
+  transition: opacity .2s ease, transform .2s ease;
+  z-index: 20;
+}
+
+/* 15) Questions flow */
+.question-container {
+  display: none;                 /* JS shows one at a time */
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-4);
+  width: 100%;
+}
+.question-container .question {
+  font-size: var(--fs-lg);
+  margin-bottom: 1.3rem;
+  width: 100%;
+}
+.options-container {
+  display: grid;
+  gap: var(--space-2);
+  width: 100%;
+  grid-template-columns: 1fr 1fr;  /* 2-up on mobile */
+}
+.option-button {
+  background-color: var(--accent-contrast);
+  color: var(--accent);
+  font-size: .85rem;
+  border-radius: var(--radius);
+  padding: var(--space-3) var(--space-4);
+  border: none;
+  cursor: pointer;
+  transition: transform .12s ease, box-shadow .12s ease, opacity .2s ease;
+  box-shadow: 0 2px 4px var(--shadow);
+}
+.option-button:hover { transform: translateY(-1px); box-shadow: 0 4px 6px var(--shadow); }
+.option-button.selected {
+  outline: 3px solid var(--accent);
+}
+
+/* open-ended textarea block */
+.open-ended-container textarea {
+  min-height: 120px;
+  resize: vertical;
+  width: 100%;
+}
+
+/* 16) Intro + Generator text blocks */
+.text-block { display: grid; gap: var(--space-2); }
+.tagline { font-size: 1.3rem; }
+.sub-tagline { opacity: .8; }
+
+.sub-tagline {
+  margin-top: 2rem;
+  font-size: 1.25rem;
+}
+
+.tagline {
+  font-size: 1.4rem;
+  line-height: 1.8rem;
+}
+
+.content-display {
+  visibility: hidden; /* generator reveals via JS */
+  white-space: pre-wrap;
+  min-height: 1.6em;
+  margin-right: 1rem;
+  margin-left: 1rem;
+}
+
+/* 17) Theme toggle icons */
+#theme-toggle {
+  cursor: pointer;
+  font-size: 1.1rem;
+  padding: 5px;
+  display: flex;
+  justify-content: center;
+  width: 35px;
+  height: 35px;
+  gap: 10px;
+  align-items: center;
+  background: none;
+  border: none;
+  color: var(--text);
+}
+
+#theme-toggle .fa-sun { display: inline; }
+#theme-toggle .fa-moon { display: none; }
+[data-theme='dark'] #theme-toggle .fa-sun { display: none; }
+[data-theme='dark'] #theme-toggle .fa-moon { display: inline; }
+
+#content-type-select {
+  align-content: center;
+  justify-content: center;
+}
+
+h3 {
+  color: var(--text);
+  font-size: var(--fs-xxxl);
+  line-height: 1.1;
+  margin: 0 0 var(--space-6);
+  text-align: center;
+}
+/* 18) Responsive tweaks */
+@media (min-width: 600px) {
+  #logo { max-width: var(--logo-max-lg); }
+  body { padding-top: 100px; } /* smaller top padding on larger screens */
+  h1 { font-size: var(--fs-xl); }
+  .options-container { grid-template-columns: repeat(3, 1fr); } /* 3-up on wider screens */
+}
+
+/* 19) Utility helpers */
+.hidden { display: none !important; }
+.center { text-align: center; }
+
+
+/* Fix misaligned header (global) */
+.icon-btn {
+  background: none;
+  text-align: center;
+}
+
+.icon-btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
