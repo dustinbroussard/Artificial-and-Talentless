@@ -164,8 +164,8 @@ body {
   flex-direction: column;
   justify-content: normal;   /* vertical center */
   align-items: center;       /* horizontal center */
-  width: 90%;
-  margin-top: 7rem;
+  width: 100%;
+  margin-bottom: 2rem;
   max-width: var(--max-content);
   padding: 0 var(--space-4);
   text-align: center;
@@ -178,7 +178,7 @@ body {
   flex-direction: column;
   justify-content: center;   /* vertical center */
   align-items: center;       /* horizontal center */
-  width: 80%;
+  width: 95%;
   max-width: var(--max-content);
   padding: 0 var(--space-0);
   text-align: center;
@@ -206,11 +206,11 @@ body {
   flex-direction: column;
   justify-content: center;   /* vertical center */
   align-items: center;       /* horizontal center */
-  width: 80%;
+  width: 100%;
   max-width: var(--max-content);
   padding: 0 var(--space-0);
   text-align: center;
-  margin-top: 15rem;
+  margin-top: 10rem;
   gap: var(--space-4);
 }
 
@@ -432,12 +432,12 @@ select {
 .question-container .question {
   font-size: var(--fs-lg);
   margin-bottom: 1.3rem;
-  width: 80%;
+  width: 100%;
 }
 .options-container {
   display: grid;
   gap: var(--space-2);
-  width: 80%;
+  width: 100%;
   grid-template-columns: 1fr 1fr;  /* 2-up on mobile */
 }
 .option-button {
@@ -460,7 +460,7 @@ select {
 .open-ended-container textarea {
   min-height: 120px;
   resize: vertical;
-  width: 80%;
+  width: 100%;
 }
 
 /* 16) Intro + Generator text blocks */
@@ -471,6 +471,11 @@ select {
 .sub-tagline {
   margin-top: 2rem;
   font-size: 1.25rem;
+}
+
+.tagline {
+  font-size: 1.4rem;
+  line-height: 1.8rem;
 }
 
 .content-display {
@@ -487,6 +492,9 @@ select {
   font-size: 1.1rem;
   padding: 5px;
   display: flex;
+  justify-content: center;
+  width: 35px;
+  height: 35px;
   gap: 10px;
   align-items: center;
   background: none;
@@ -537,3 +545,7 @@ h3 {
   padding: 0 var(--space-5);
 }
 
+.icon-btn {
+  background: none;
+  text-align: center;
+}
