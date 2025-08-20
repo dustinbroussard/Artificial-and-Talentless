@@ -12,18 +12,6 @@
     <link rel="apple-touch-icon" href="assets/icon.png">
     <link rel="manifest" href="manifest.webmanifest">
     <title>Artificial -and- Talentless</title>
-    <script>
-      (function () {
-        const KEY = 'app:theme';
-        const stored = localStorage.getItem(KEY) || 'system';
-        const resolved = stored === 'system'
-          ? (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
-          : stored;
-        const root = document.documentElement;
-        root.setAttribute('data-theme', resolved);
-        root.style.colorScheme = resolved;
-      })();
-    </script>
     <!-- Tailwind CSS via CDN with proper integrity hash - TEMPORARY - prefer local build for production -->
     <!-- Font Awesome for icons with fallback -->
     <link rel="stylesheet" 
@@ -46,7 +34,10 @@
     </div>
     <!-- Container for the logo, fixed at the top of the viewport -->
     <div id="logo-container">
-        <img id="logo" src="assets/logo.png" alt="Artificial -and- Talentless Logo" onerror="this.onerror=null; this.src='https://placehold.co/350x80/1A1A1A/FFFFE3?text=Logo'" data-dark-src="assets/logo-dark.png">
+        <img id="logo" src="assets/logo.png"
+             data-light-src="assets/logo.png"
+             data-dark-src="assets/logo-dark.png"
+             alt="Artificial —and— Talentless Logo">
     </div>
 
     <!-- Main content area that will center the text vertically -->
@@ -60,7 +51,7 @@
 
     <!-- Footer for the button, fixed at the bottom -->
     <div id="button-footer">
-        <button id="get-started-button" class="nav-button">Get Started</button>
+        <button id="get-started-button" class="nav-button" disabled>Get Started</button>
     </div>
 
     <script src="js/index.js"></script>

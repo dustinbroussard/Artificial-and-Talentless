@@ -1,15 +1,8 @@
 
-        document.addEventListener('DOMContentLoaded', () => {
-        // 🔁 data-dark-src swap logic
-        document.querySelectorAll("img[data-dark-src]").forEach(img => {
-          if (document.body.classList.contains("dark-mode")) {
-            img.src = img.dataset.darkSrc;
-          }
-        });
-            // Apply theme based on localStorage
-            const theme = localStorage.getItem('theme');
-            if (theme === 'dark') {
-                document.body.classList.add('dark-mode');
+document.addEventListener('DOMContentLoaded', () => {
+            if (localStorage.getItem('isOnboarded') === 'true') {
+                window.location.href = 'generator.html';
+                return;
             }
 
             // Get all question containers
@@ -130,14 +123,14 @@
                     // Multiple choice validation
                     if (userProfileData[questionIdentifier] === undefined) { // Check for undefined, not just falsy
                         // Using a custom modal/message box instead of alert()
-                        displayMessage("Please select an option before proceeding.", "warning");
+                        showMessage("Please select an option before proceeding.", "warning");
                         isValid = false;
                     }
                 } else if (currentQuestionContainer.querySelector('textarea')) {
                     // Open-ended validation
                     const textareaId = currentQuestionContainer.querySelector('textarea').id;
                     if (!userProfileData[textareaId] || userProfileData[textareaId].trim() === '') {
-                        displayMessage("Please fill out this field before proceeding.", "warning");
+                        showMessage("Please fill out this field before proceeding.", "warning");
                         isValid = false;
                     }
                 }
@@ -167,48 +160,6 @@
                     showQuestion(currentQuestionIndex);
                 }
             });
-
-            // Custom message box function (replaces alert())
-            function displayMessage(message, type = "info") {
-                const messageBox = document.createElement('div');
-                messageBox.classList.add('message-box', type);
-                messageBox.textContent = message;
-                document.body.appendChild(messageBox);
-
-                // Basic styling for the message box
-                messageBox.style.cssText = `
-                    position: fixed;
-                    bottom: 80px; /* Adjusted: Above the new, lower fixed footer */
-                    left: 50%;
-                    transform: translateX(-50%);
-                    background-color: #000000;
-                    color: #FFFFE3;
-                    padding: 15px 25px;
-                    border-radius: 8px;
-                    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-                    z-index: 1000;
-                    font-family: 'Special Elite', monospace;
-                    opacity: 0;
-                    transition: opacity 0.3s ease-in-out;
-                    max-width: 80%;
-                    text-align: center;
-                `;
-                // Dark mode adjustment for message box
-                if (document.body.classList.contains('dark-mode')) {
-                    messageBox.style.backgroundColor = '#FFFFE3';
-                    messageBox.style.color = '#000000';
-                }
-
-                setTimeout(() => {
-                    messageBox.style.opacity = 1;
-                }, 10); // Small delay to trigger transition
-
-                setTimeout(() => {
-                    messageBox.style.opacity = 0;
-                    messageBox.addEventListener('transitionend', () => messageBox.remove());
-                }, 3000); // Message disappears after 3 seconds
-            }
-
 
             // Initial display of the first question
             showQuestion(currentQuestionIndex);
