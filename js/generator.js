@@ -217,9 +217,11 @@ document.addEventListener('DOMContentLoaded', async () => {
                     displayContentElement.textContent = '';
                     displayContentElement.style.visibility = 'visible';
                     typeWriter(displayContentElement, generatedText, 0, () => {
-                        buttonFooter.style.visibility = 'visible';
-                        generateNewButton.disabled = false;
-                        settingsButton.disabled = false;
+                        setTimeout(() => {
+                            buttonFooter.style.visibility = 'visible';
+                            generateNewButton.disabled = false;
+                            settingsButton.disabled = false;
+                        }, 500);
                     });
                 } catch (error) {
                     console.error("Error generating content:", error);
@@ -228,11 +230,11 @@ document.addEventListener('DOMContentLoaded', async () => {
                     showMessage(msg, "error");
                     displayContentElement.textContent = "Error generating content. Maybe your life is too boring for AI?";
                     displayContentElement.style.visibility = 'visible';
-                } finally {
-                    loadingSpinner.style.display = 'none';
                     buttonFooter.style.visibility = 'visible';
                     generateNewButton.disabled = false;
                     settingsButton.disabled = false;
+                } finally {
+                    loadingSpinner.style.display = 'none';
                 }
                 
             }
