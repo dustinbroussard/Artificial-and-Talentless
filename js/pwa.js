@@ -3,7 +3,8 @@
   let deferredPrompt;
 
   if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/sw.js');
+    const scope = location.pathname.replace(/[^/]+$/, '');
+    navigator.serviceWorker.register('./sw.js', { scope }).catch(console.error);
   }
 
   function showInstallBanner() {

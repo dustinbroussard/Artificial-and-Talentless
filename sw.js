@@ -1,23 +1,25 @@
 // sw.js — robust install (skips missing files), same-origin only
-const CACHE_NAME = 'a-and-t-v8';
+const CACHE_NAME = 'a-and-t-v9';
 
-// Same-origin files to precache
+// Same-origin files to precache (relative to scope)
 const ASSETS = [
-  '/', '/index.html', '/intro.html', '/name.html', '/questions.html',
-  '/onboard-settings.html', '/generator.html', '/settings.html',
-  '/style.css',
+  'index.html','intro.html','name.html','questions.html',
+  'onboard-settings.html','generator.html','settings.html',
+  'style.css',
   'js/index.js','js/intro.js','js/name.js','js/questions.js',
   'js/onboard-settings.js','js/generator.js','js/settings.js',
   'js/pwa.js','js/theme.js','js/message.js',
-  '/assets/logo.png','/assets/logo-dark.png','/assets/icon.png','/assets/icon-dark.png',
-  '/manifest.webmanifest'
+  'assets/logo.png','assets/logo-dark.png','assets/icon.png','assets/icon-dark.png',
+  'manifest.webmanifest'
 ];
+
+const SCOPE = self.location.pathname.replace(/sw\.js$/, '');
 
 self.addEventListener('install', (event) => {
   event.waitUntil((async () => {
     const cache = await caches.open(CACHE_NAME);
     // Fetch each asset individually; skip any that fail (404/CORS/etc.)
-    const requests = ASSETS.map(u => new Request(u, { cache: 'reload' }));
+    const requests = ASSETS.map(p => new Request(SCOPE + p, { cache: 'reload' }));
     const results = await Promise.allSettled(
       requests.map(async (req) => {
         try {
@@ -57,42 +59,35 @@ self.addEventListener('fetch', (event) => {
   // Let browser handle ALL cross-origin (CDNs, fonts, APIs)
   if (url.origin !== location.origin) return;
 
-  // Navigations: online → network, offline → cached app shell
+  const rel = url.pathname.startsWith(SCOPE) ? url.pathname.slice(SCOPE.length) : url.pathname;
+
+  // Navigations
   if (req.mode === 'navigate') {
     event.respondWith((async () => {
       try {
-        return await fetch(req);
-      } catch (err) {
-        const cache = await caches.open(CACHE_NAME);
-        const shell = await cache.match('/index.html', { ignoreSearch: true });
-        return shell || new Response('Offline', { status: 503 });
-      }
-    })());
-    return;
-  }
-
-  // Cache-first for anything we precached
-  if (ASSETS.includes(url.pathname)) {
-    event.respondWith((async () => {
-      const cached = await caches.match(req, { ignoreSearch: true });
+        const net = await fetch(req);
+        if (net && net.ok) return net;
+      } catch (err) {}
+      const cache = await caches.open(CACHE_NAME);
+      const cached = await cache.match(SCOPE + rel, { ignoreSearch: true });
       if (cached) return cached;
-      const net = await fetch(req);
-      if (net && net.ok) (await caches.open(CACHE_NAME)).put(req, net.clone());
-      return net;
+      const shell = await cache.match(SCOPE + 'index.html', { ignoreSearch: true });
+      return shell || new Response('Offline', { status: 503 });
     })());
     return;
   }
 
-  // Network-first for other same-origin requests
+  // Same-origin assets: cache-first then network (update cache on success)
   event.respondWith((async () => {
+    const cache = await caches.open(CACHE_NAME);
+    const cached = await cache.match(req, { ignoreSearch: true });
+    if (cached) return cached;
     try {
       const net = await fetch(req);
-      if (net && net.ok) (await caches.open(CACHE_NAME)).put(req, net.clone());
+      if (net && net.ok && net.type === 'basic') await cache.put(req, net.clone());
       return net;
     } catch (err) {
-      const cached = await caches.match(req, { ignoreSearch: true });
-      if (cached) return cached;
-      throw err;
+      return cached || Promise.reject(err);
     }
   })());
 });

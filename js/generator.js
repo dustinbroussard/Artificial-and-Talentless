@@ -96,6 +96,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             async function generateContent() {
                 generateNewButton.disabled = true;
+                settingsButton.disabled = true;
                 // IMPORTANT: Re-read appSettings and userProfile from localStorage on each call
                 const storedUserName = localStorage.getItem('userName') || 'Anonymous Being';
                 const userProfile = JSON.parse(localStorage.getItem('userProfile') || '{}');
@@ -114,6 +115,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     displayContentElement.style.visibility = 'visible';
                     buttonFooter.style.visibility = 'visible';
                     generateNewButton.disabled = false;
+                    settingsButton.disabled = false;
                     return; // Exit function if settings is missing
                 }
 
@@ -183,39 +185,56 @@ document.addEventListener('DOMContentLoaded', async () => {
                     max_tokens: 150 // Keep responses concise
                 });
 
-                try {
-                    const response = await fetch(openRouterApiUrl, {
-                        method: 'POST',
-                        headers: headers,
-                        body: body
-                    });
-
-                    if (!response.ok) {
-                        const errorData = await response.json();
-                        throw new Error(`API Error: ${response.status} - ${errorData.message || response.statusText}`);
+                const controller = new AbortController();
+                const timer = setTimeout(() => controller.abort(), 20000);
+                async function callAPI(attempt = 1) {
+                    try {
+                        const response = await fetch(openRouterApiUrl, {
+                            method: 'POST',
+                            headers: headers,
+                            body: body,
+                            signal: controller.signal
+                        });
+                        if (!response.ok) {
+                            if (response.status === 429 && attempt === 1) {
+                                await new Promise(r => setTimeout(r, 1500));
+                                return callAPI(2);
+                            }
+                            let msg = 'Server error';
+                            if (response.status === 401 || response.status === 403) msg = 'Auth error';
+                            if (response.status === 429) msg = 'Rate limited';
+                            throw new Error(msg);
+                        }
+                        return await response.json();
+                    } finally {
+                        clearTimeout(timer);
                     }
+                }
 
-                    const result = await response.json();
-                    const generatedText = result.choices[0].message.content.trim();
-
-                    // Display generated text with typewriter effect
-                    loadingSpinner.style.display = 'none'; // Hide spinner
-                    displayContentElement.textContent = ''; // Clear loading message
-                    displayContentElement.style.visibility = 'visible'; // Ensure visibility for typewriter
+                try {
+                    const result = await callAPI();
+                    const generatedText = (result.choices[0].message.content || '').trim().slice(0, 300);
+                    displayContentElement.textContent = '';
+                    displayContentElement.style.visibility = 'visible';
                     typeWriter(displayContentElement, generatedText, 0, () => {
                         buttonFooter.style.visibility = 'visible';
                         generateNewButton.disabled = false;
+                        settingsButton.disabled = false;
                     });
-
                 } catch (error) {
                     console.error("Error generating content:", error);
-                    showMessage(`Failed to generate content: ${error.message}. Check your API Key/Model settings.`, "error");
-                    loadingSpinner.style.display = 'none';
+                    let msg = error.message || 'Failed to generate content.';
+                    if (error.name === 'AbortError') msg = 'Request timed out.';
+                    showMessage(msg, "error");
                     displayContentElement.textContent = "Error generating content. Maybe your life is too boring for AI?";
                     displayContentElement.style.visibility = 'visible';
+                } finally {
+                    loadingSpinner.style.display = 'none';
                     buttonFooter.style.visibility = 'visible';
                     generateNewButton.disabled = false;
+                    settingsButton.disabled = false;
                 }
+                
             }
 
             // --- Event Listeners for Buttons ---
