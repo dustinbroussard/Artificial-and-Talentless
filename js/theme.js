@@ -1,7 +1,7 @@
 (function () {
   const KEY = 'app:theme';
   const media = window.matchMedia('(prefers-color-scheme: dark)');
-  const system = () => (media.matches ? 'dark' : 'light');
+  const system = () => (media && media.matches ? 'dark' : 'light');
 
   function apply(pref) {
     const theme = pref === 'system' ? system() : pref;
@@ -25,9 +25,18 @@
   function init() {
     const pref = localStorage.getItem(KEY) || 'system';
     apply(pref);
-    media.addEventListener('change', () => {
+
+    const handleChange = () => {
       if ((localStorage.getItem(KEY) || 'system') === 'system') apply('system');
-    });
+    };
+
+    if (media) {
+      if (typeof media.addEventListener === 'function') {
+        media.addEventListener('change', handleChange);
+      } else if (typeof media.addListener === 'function') {
+        media.addListener(handleChange);
+      }
+    }
     const btn = document.getElementById('theme-toggle');
     if (btn) btn.addEventListener('click', () => {
       const current = localStorage.getItem(KEY) || 'system';
@@ -35,5 +44,9 @@
       apply(resolved);
     });
   }
-  document.addEventListener('DOMContentLoaded', init);
+  if (document.readyState !== 'loading') {
+    init();
+  } else {
+    document.addEventListener('DOMContentLoaded', init);
+  }
 })();
