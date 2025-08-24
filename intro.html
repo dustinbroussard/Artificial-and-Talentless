@@ -3,6 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script>
+      try {
+        if (localStorage.getItem('isOnboarded') === 'true' &&
+            !/generator\.html($|\?)/.test(location.pathname)) {
+          // Use replace() to avoid creating an entry in history (back won’t flicker back to index)
+          location.replace('generator.html');
+        }
+      } catch (e) {}
+    </script>
     <link rel="manifest" href="manifest.webmanifest">
     <title>Artificial -and- Talentless - Onboarding</title>
     <!-- Tailwind CSS CDN for styling -->

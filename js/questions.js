@@ -178,8 +178,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     const userName = localStorage.getItem('userName') || 'Unknown User';
                     const fullUserProfile = { userName, ...userProfileData };
                     localStorage.setItem('userProfile', JSON.stringify(fullUserProfile));
-                    localStorage.setItem('isOnboarded', 'true'); // Mark onboarding as complete
-                    window.location.href = 'onboard-settings.html'; // Navigate to the main app
+                    // Do NOT set isOnboarded yet; finish setup in Settings
+                    window.location.href = 'settings.html';
                 }
             });
 

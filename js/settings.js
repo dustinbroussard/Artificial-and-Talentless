@@ -1,5 +1,8 @@
 document.addEventListener('DOMContentLoaded', () => {
-  if (localStorage.getItem('isOnboarded') !== 'true') {
+  // Allow Settings if either (a) fully onboarded OR (b) just finished questions (profile exists)
+  const isOnboarded = localStorage.getItem('isOnboarded') === 'true';
+  const hasProfile = !!localStorage.getItem('userProfile');
+  if (!isOnboarded && !hasProfile) {
     window.location.href = 'index.html';
     return;
   }
@@ -87,11 +90,25 @@ document.addEventListener('DOMContentLoaded', () => {
   });
   filterFree.addEventListener('change', populateModels);
 
-  backBtn.addEventListener('click', () => { window.location.href = 'generator.html'; });
+  backBtn.addEventListener('click', () => {
+    const isOnboarded = localStorage.getItem('isOnboarded') === 'true';
+    window.location.href = isOnboarded ? 'generator.html' : 'questions.html';
+  });
   saveBtn.addEventListener('click', () => {
-    const appSettings = { apiKey: apiKeyInput.value.trim(), selectedModel: modelSelect.value, contentType: contentTypeSelect.value };
+    const apiKey = apiKeyInput.value.trim();
+    const selectedModel = modelSelect.value;
+    const contentType = contentTypeSelect.value;
+
+    if (!apiKey) { showMessage('Enter your OpenRouter API key.', 'warning'); return; }
+    if (!selectedModel) { showMessage('Choose a model.', 'warning'); return; }
+    if (!contentType) { showMessage('Choose a content type.', 'warning'); return; }
+
+    const appSettings = { apiKey, selectedModel, contentType };
     localStorage.setItem('appSettings', JSON.stringify(appSettings));
+    localStorage.setItem('isOnboarded', 'true');
     showMessage('Settings saved', 'info');
+    // Smooth transition to Generator
+    setTimeout(() => { window.location.replace('generator.html'); }, 300);
   });
 
   deleteBtn.addEventListener('click', async () => {

@@ -1,13 +1,13 @@
 // sw.js — robust install (skips missing files), same-origin only
-const CACHE_NAME = 'a-and-t-v9';
+const CACHE_NAME = 'a-and-t-v10';
 
 // Same-origin files to precache (relative to scope)
 const ASSETS = [
   'index.html','intro.html','name.html','questions.html',
-  'onboard-settings.html','generator.html','settings.html',
+  'generator.html','settings.html',
   'style.css',
   'js/index.js','js/intro.js','js/name.js','js/questions.js',
-  'js/onboard-settings.js','js/generator.js','js/settings.js',
+  'js/generator.js','js/settings.js',
   'js/pwa.js','js/theme.js','js/message.js',
   'assets/logo.png','assets/logo-dark.png','assets/icon.png','assets/icon-dark.png',
   'manifest.webmanifest'
