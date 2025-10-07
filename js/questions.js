@@ -18,6 +18,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
             let currentQuestionIndex = 0;
             const userProfileData = {}; // Stores user's answers
+            // Restore any draft answers to preserve progress across reloads
+            try {
+                const draft = JSON.parse(localStorage.getItem('userProfileDraft') || '{}');
+                if (draft && typeof draft === 'object') Object.assign(userProfileData, draft);
+            } catch (_) {}
 
             // Helper function to show only the current question and update button states
             function showQuestion(index) {
@@ -27,6 +32,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 // Update 'Previous' button visibility
                 prevButton.style.display = index === 0 ? 'none' : 'block';
+                prevButton.disabled = index === 0;
+                prevButton.setAttribute('aria-disabled', String(index === 0));
 
                 // Update 'Next' button text based on whether it's the last question
                 if (index === questionContainers.length - 1) {
@@ -36,7 +43,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
 
                 // Restore selected state for option buttons and textarea content
-                const currentQuestionContainer = questionContainers[currentQuestionIndex];
+                const currentQuestionContainer = questionContainers[index];
                 const questionId = currentQuestionContainer.id.replace('question-', '');
 
                 // Restore multiple choice selection
@@ -54,11 +61,23 @@ document.addEventListener('DOMContentLoaded', () => {
                         }
                     });
                     if (!selectedAnswer && optionsForThisQuestion[0]) optionsForThisQuestion[0].tabIndex = 0;
+
+                    // Focus the selected option or the first option for better UX
+                    const focusTarget = Array.from(optionsForThisQuestion).find(o => o.classList.contains('selected')) || optionsForThisQuestion[0];
+                    if (focusTarget) focusTarget.focus();
                 }
                 // Restore open-ended text
                 else if (currentQuestionContainer.querySelector('textarea')) {
                     const textareaId = currentQuestionContainer.querySelector('textarea').id;
                     currentQuestionContainer.querySelector('textarea').value = userProfileData[textareaId] || '';
+                    // Focus textarea and move caret to end
+                    const ta = currentQuestionContainer.querySelector('textarea');
+                    if (ta) {
+                        ta.focus();
+                        const val = ta.value;
+                        ta.value = '';
+                        ta.value = val;
+                    }
                 }
 
 
@@ -102,6 +121,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     this.setAttribute('aria-checked','true');
                     this.tabIndex = 0;
                     userProfileData[questionId] = answer;
+                    try { localStorage.setItem('userProfileDraft', JSON.stringify(userProfileData)); } catch (_) {}
                     updateNextButtonState();
                 });
                 button.addEventListener('keydown', (e) => {
@@ -133,11 +153,13 @@ document.addEventListener('DOMContentLoaded', () => {
             openEndedTextareas.forEach(textarea => {
                 textarea.addEventListener('input', function() { // Use 'input' for real-time validation
                     userProfileData[this.id] = this.value;
+                    try { localStorage.setItem('userProfileDraft', JSON.stringify(userProfileData)); } catch (_) {}
                     updateNextButtonState(); // Update button state as user types
                 });
                 // Also save on blur, to catch cases where user might just paste and click away
                 textarea.addEventListener('blur', function() {
                     userProfileData[this.id] = this.value.trim(); // Trim whitespace on blur
+                    try { localStorage.setItem('userProfileDraft', JSON.stringify(userProfileData)); } catch (_) {}
                     updateNextButtonState();
                 });
             });
@@ -178,6 +200,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     const userName = localStorage.getItem('userName') || 'Unknown User';
                     const fullUserProfile = { userName, ...userProfileData };
                     localStorage.setItem('userProfile', JSON.stringify(fullUserProfile));
+                    try { localStorage.removeItem('userProfileDraft'); } catch (_) {}
                     // Do NOT set isOnboarded yet; finish setup in Settings
                     window.location.href = 'settings.html';
                 }

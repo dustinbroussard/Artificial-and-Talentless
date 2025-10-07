@@ -3,12 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script>
+      // Apply saved theme ASAP to prevent flash
+      try {
+        var pref = localStorage.getItem('app:theme') || 'system';
+        var mq = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)');
+        var resolved = pref === 'system' ? (mq && mq.matches ? 'dark' : 'light') : pref;
+        var root = document.documentElement;
+        if (root.getAttribute('data-theme') !== resolved) {
+          root.setAttribute('data-theme', resolved);
+          root.style.colorScheme = resolved;
+        }
+      } catch (e) {}
+    </script>
     <link rel="manifest" href="manifest.webmanifest">
     <title>Artificial -and- Talentless - Settings</title>
-    <!-- Tailwind CSS CDN for styling -->
-    <script src="https://cdn.tailwindcss.com" onerror="console.warn('Tailwind CDN failed to load')"></script>
     <!-- Font Awesome for icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+          integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw=="
+          crossorigin="anonymous"
+          referrerpolicy="no-referrer">
     <!-- Google Fonts: Special Elite for that vintage typewriter feel -->
     <link href="https://fonts.googleapis.com/css2?family=Special+Elite&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
@@ -30,7 +44,7 @@
             <h2 class="setting-title">AI Engine Settings</h2>
             <label for="openrouter-api-key" class="block text-sm mb-2 text-center">OpenRouter API Key:</label>
             <input type="password" id="openrouter-api-key" class="input-field" placeholder="sk-...">
-            <a href="https://openrouter.ai/keys" target="_blank" class="api-link">Get your API key here</a>
+            <a href="https://openrouter.ai/keys" target="_blank" rel="noopener noreferrer" class="api-link">Get your API key here</a>
 
             <label for="openrouter-model-select" class="block text-sm my-2 text-center">Select Model:</label>
             <select id="openrouter-model-select" class="input-field">

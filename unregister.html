@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script>
+    // Apply saved theme ASAP to prevent flash
+    try {
+      var pref = localStorage.getItem('app:theme') || 'system';
+      var mq = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)');
+      var resolved = pref === 'system' ? (mq && mq.matches ? 'dark' : 'light') : pref;
+      var root = document.documentElement;
+      if (root.getAttribute('data-theme') !== resolved) {
+        root.setAttribute('data-theme', resolved);
+        root.style.colorScheme = resolved;
+      }
+    } catch (e) {}
+  </script>
+  <title>Unregister Service Worker • Artificial -and- Talentless</title>
+  <link rel="stylesheet" href="style.css">
+  <meta name="theme-color" content="#FFFFE3">
+  <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
+</head>
+<body>
+  <div id="header-content" class="settings">
+    <h1 id="settings-main-title">Unregister / Reset</h1>
+    <button id="theme-toggle" type="button" aria-pressed="false" aria-label="Toggle theme" class="icon-btn">
+      <i class="fas fa-sun" aria-hidden="true"></i>
+      <i class="fas fa-moon" aria-hidden="true"></i>
+    </button>
+  </div>
+
+  <div id="main-content-area" class="settings">
+    <div class="setting-section">
+      <h2 class="setting-title">Service Worker</h2>
+      <div id="sw-status" class="data-info">Loading service worker info…</div>
+      <div style="display:flex; gap:8px; justify-content:center; flex-wrap:wrap; margin-top:12px;">
+        <button id="btn-unregister" class="nav-button">Unregister SW</button>
+        <button id="btn-clear-caches" class="nav-button">Clear Caches</button>
+      </div>
+    </div>
+
+    <div class="setting-section">
+      <h2 class="setting-title">Storage</h2>
+      <div class="data-info">Clear saved app data from this browser:</div>
+      <div style="display:flex; gap:8px; justify-content:center; flex-wrap:wrap; margin-top:12px;">
+        <button id="btn-clear-storage" class="nav-button">Clear localStorage + sessionStorage</button>
+      </div>
+    </div>
+
+    <div class="setting-section">
+      <h2 class="setting-title">Full Reset</h2>
+      <div class="data-info">Unregister SW, clear caches, and wipe storage. Then return home.</div>
+      <button id="btn-full-reset" class="nav-button" style="background:#9E001C;color:#FFFFE3;">FULL RESET</button>
+    </div>
+  </div>
+
+  <div id="button-footer">
+    <button id="btn-home" class="nav-button">Back to Home</button>
+  </div>
+
+  <script>
+    // Minimal icons without loading Font Awesome (keep page self-contained)
+    // Theme handler (re-uses theme.js conventions lightly)
+    (function(){
+      const KEY = 'app:theme';
+      const mq = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)');
+      const getPref = () => localStorage.getItem(KEY) || 'system';
+      const getSystem = () => (mq && mq.matches ? 'dark' : 'light');
+      function apply(pref){
+        const resolved = pref === 'system' ? getSystem() : pref;
+        document.documentElement.setAttribute('data-theme', resolved);
+        document.documentElement.style.colorScheme = resolved;
+        localStorage.setItem(KEY, pref);
+        const btn = document.getElementById('theme-toggle');
+        if (btn) btn.setAttribute('aria-pressed', String(resolved === 'dark'));
+      }
+      function init(){
+        apply(getPref());
+        const btn = document.getElementById('theme-toggle');
+        if (btn) btn.addEventListener('click', ()=>{
+          const pref = getPref();
+          apply(pref === 'dark' ? 'light' : 'dark');
+        });
+      }
+      if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init, {once:true}); else init();
+    })();
+
+    async function getSWInfo() {
+      if (!('serviceWorker' in navigator)) return 'Service workers unsupported in this browser.';
+      const regs = await navigator.serviceWorker.getRegistrations();
+      if (!regs.length) return 'No active service worker registrations.';
+      const lines = await Promise.all(regs.map(async (r, i) => {
+        const s = r.active || r.waiting || r.installing;
+        const state = s ? (s.state || 'unknown') : 'none';
+        return `#${i+1}: scope=${r.scope} state=${state}`;
+      }));
+      return lines.join('\n');
+    }
+
+    async function unregisterAllSW() {
+      if (!('serviceWorker' in navigator)) return 0;
+      const regs = await navigator.serviceWorker.getRegistrations();
+      let count = 0;
+      for (const r of regs) {
+        try { if (await r.unregister()) count++; } catch (e) {}
+      }
+      return count;
+    }
+
+    async function clearAllCaches() {
+      if (!('caches' in window)) return 0;
+      const keys = await caches.keys();
+      let count = 0;
+      await Promise.all(keys.map(async k => { try { if (await caches.delete(k)) count++; } catch(e){} }));
+      return count;
+    }
+
+    function clearStorage() {
+      try { localStorage.clear(); } catch(e){}
+      try { sessionStorage.clear(); } catch(e){}
+    }
+
+    function setStatus(text) {
+      const el = document.getElementById('sw-status');
+      if (el) el.textContent = text;
+    }
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      setStatus('Checking…');
+      setStatus(await getSWInfo());
+
+      document.getElementById('btn-unregister').addEventListener('click', async () => {
+        await unregisterAllSW();
+        setStatus(await getSWInfo());
+      });
+
+      document.getElementById('btn-clear-caches').addEventListener('click', async () => {
+        await clearAllCaches();
+        setStatus(await getSWInfo());
+      });
+
+      document.getElementById('btn-clear-storage').addEventListener('click', () => {
+        clearStorage();
+        alert('Storage cleared.');
+      });
+
+      document.getElementById('btn-full-reset').addEventListener('click', async () => {
+        await unregisterAllSW();
+        await clearAllCaches();
+        clearStorage();
+        location.replace('index.html');
+      });
+
+      document.getElementById('btn-home').addEventListener('click', () => {
+        location.href = 'index.html';
+      });
+    });
+  </script>
+</body>
+</html>

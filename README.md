@@ -4,7 +4,7 @@ This project is a Progressive Web App that offers light and dark themes with a s
 
 ## Features
 - Theme preference (`light`, `dark`, or `system`) is saved to `localStorage` and applied before the first paint to avoid flashes of unstyled content.
-- Toggle button available on every page except `generator.html` with proper `aria-pressed` state and icon swaps.
+- Theme toggle button available on every page (including `generator.html`) with proper `aria-pressed` state and icon swaps.
 - Service worker uses a Stale-While-Revalidate caching strategy to provide offline support.
 - `manifest.webmanifest` defines install metadata and icons for Android/Chrome.
 - Custom install banner shown on each visit until the user installs or dismisses it for the session.
@@ -29,3 +29,14 @@ The project currently pulls Tailwind from the CDN during development. For a prod
 4. Build with `npx tailwindcss -i src/styles/tailwind.css -o style.css --minify`
 5. Remove `<script src="https://cdn.tailwindcss.com"></script>` from HTML files.
 
+## Developer Utilities
+
+- Settings access during onboarding: Users can open `settings.html` after answering some questions even if onboarding isn’t complete. Draft profile answers are persisted in `localStorage` under `userProfileDraft` and cleared on submission.
+
+- Unregister / Reset page: Visit `unregister.html` to:
+  - Unregister any service worker registrations
+  - Clear all caches
+  - Clear localStorage and sessionStorage
+  - Perform a full reset and return to `index.html`
+
+This page avoids auto-registering the SW (it does not load the PWA script) to ensure reliable cleanup.

@@ -20,10 +20,10 @@ document.addEventListener('DOMContentLoaded', async () => {
                 "Calibrating your customized chaos..."
             ];
 
-            // --- Typewriter Effect ---
+            // --- Typewriter Effect (safe: textContent to avoid HTML injection) ---
             function typeWriter(element, text, i, callback) {
                 if (i < text.length) {
-                    element.innerHTML += text.charAt(i);
+                    element.textContent += text.charAt(i);
                     setTimeout(() => typeWriter(element, text, i + 1, callback), 30 + Math.random() * 70);
                 } else if (callback) setTimeout(callback, 1000); // Longer pause after typing
             }
@@ -94,7 +94,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 ]
             };
 
-            async function generateContent() {
+            async function generateContent(retriedOnce = false) {
                 generateNewButton.disabled = true;
                 settingsButton.disabled = true;
                 // IMPORTANT: Re-read appSettings and userProfile from localStorage on each call
@@ -185,9 +185,12 @@ document.addEventListener('DOMContentLoaded', async () => {
                     max_tokens: 150 // Keep responses concise
                 });
 
-                const controller = new AbortController();
-                const timer = setTimeout(() => controller.abort(), 20000);
-                async function callAPI(attempt = 1) {
+                function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+                async function callAPI(attempt = 1, maxAttempts = 4) {
+                    // Per-attempt timeout controller
+                    const controller = new AbortController();
+                    const timeout = 15000 + Math.floor(Math.random() * 4000); // 15–19s
+                    const timer = setTimeout(() => controller.abort(), timeout);
                     try {
                         const response = await fetch(openRouterApiUrl, {
                             method: 'POST',
@@ -196,24 +199,51 @@ document.addEventListener('DOMContentLoaded', async () => {
                             signal: controller.signal
                         });
                         if (!response.ok) {
-                            if (response.status === 429 && attempt === 1) {
-                                await new Promise(r => setTimeout(r, 1500));
-                                return callAPI(2);
-                            }
+                            // Prepare friendly error code
                             let msg = 'Server error';
                             if (response.status === 401 || response.status === 403) msg = 'Auth error';
                             if (response.status === 429) msg = 'Rate limited';
+
+                            // Handle 429/5xx with bounded exponential backoff + jitter
+                            if ((response.status === 429 || response.status >= 500) && attempt < maxAttempts) {
+                                let delayMs = 1200 * Math.pow(2, attempt - 1); // 1.2s, 2.4s, 4.8s
+                                // Respect Retry-After if present (seconds)
+                                const retryAfter = response.headers.get('Retry-After');
+                                const ra = retryAfter ? parseInt(retryAfter, 10) : NaN;
+                                if (!Number.isNaN(ra) && ra > 0) delayMs = ra * 1000;
+                                // Add jitter
+                                delayMs += Math.floor(Math.random() * 400);
+                                showMessage(`${msg}. Retrying in ${Math.ceil(delayMs/1000)}s…`, 'info');
+                                await sleep(delayMs);
+                                return callAPI(attempt + 1, maxAttempts);
+                            }
                             throw new Error(msg);
                         }
                         return await response.json();
+                    } catch (err) {
+                        if (err && err.name === 'AbortError' && attempt < maxAttempts) {
+                            // Timeout: retry with backoff
+                            const delayMs = 800 * Math.pow(2, attempt - 1) + Math.floor(Math.random() * 300);
+                            showMessage('Request timed out. Retrying…', 'info');
+                            await sleep(delayMs);
+                            return callAPI(attempt + 1, maxAttempts);
+                        }
+                        throw err;
                     } finally {
                         clearTimeout(timer);
                     }
                 }
 
+                let suppressFinally = false;
                 try {
                     const result = await callAPI();
-                    const generatedText = (result.choices[0].message.content || '').trim().slice(0, 300);
+                    const content = Array.isArray(result?.choices) && result.choices[0]?.message?.content
+                      ? String(result.choices[0].message.content)
+                      : '';
+                    if (!content) {
+                        throw new Error('Empty response');
+                    }
+                    const generatedText = content.trim().slice(0, 300);
                     displayContentElement.textContent = '';
                     displayContentElement.style.visibility = 'visible';
                     typeWriter(displayContentElement, generatedText, 0, () => {
@@ -225,27 +255,53 @@ document.addEventListener('DOMContentLoaded', async () => {
                     });
                 } catch (error) {
                     console.error("Error generating content:", error);
+                    // One delayed retry if first attempt fails (covers non-429 cases too)
+                    if (!retriedOnce) {
+                        suppressFinally = true; // keep spinner and buttons hidden
+                        showMessage('Having a moment. Retrying…', 'info');
+                        await sleep(1500);
+                        return generateContent(true);
+                    }
                     let msg = error.message || 'Failed to generate content.';
                     if (error.name === 'AbortError') msg = 'Request timed out.';
-                    showMessage(msg, "error");
+                    if (msg === 'Rate limited') {
+                        // Offer actionable retry right away
+                        showActionMessage('Rate limited. Try again now?', 'Try again', () => {
+                            // Reset UI and try again immediately
+                            loadingSpinner.style.display = 'block';
+                            displayContentElement.textContent = '';
+                            displayContentElement.style.visibility = 'hidden';
+                            buttonFooter.style.visibility = 'hidden';
+                            generateNewButton.disabled = true;
+                            settingsButton.disabled = true;
+                            generateContent(true);
+                        }, { timeout: 6000 });
+                    } else {
+                        showMessage(msg, "error");
+                    }
                     displayContentElement.textContent = "Error generating content. Maybe your life is too boring for AI?";
                     displayContentElement.style.visibility = 'visible';
                     buttonFooter.style.visibility = 'visible';
                     generateNewButton.disabled = false;
                     settingsButton.disabled = false;
                 } finally {
-                    loadingSpinner.style.display = 'none';
+                    if (!suppressFinally) loadingSpinner.style.display = 'none';
                 }
                 
             }
 
             // --- Event Listeners for Buttons ---
-            generateNewButton.addEventListener('click', generateContent);
+            generateNewButton.addEventListener('click', () => generateContent(false));
             settingsButton.addEventListener('click', () => {
                 window.location.href = 'settings.html'; // Navigate to the new settings.html
             });
 
             // --- Initial Content Generation on Page Load ---
-            generateContent(); // Start generation process on page load
+            const afterSettings = (function(){ try { return sessionStorage.getItem('afterSettings') === '1'; } catch(_) { return false; } })();
+            if (afterSettings) { try { sessionStorage.removeItem('afterSettings'); } catch(_) {}
+                setTimeout(() => generateContent(false), 1200);
+            } else {
+                generateContent(false); // Start generation process on page load
+            }
         });
     

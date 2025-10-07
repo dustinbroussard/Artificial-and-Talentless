@@ -538,6 +538,13 @@ h3 {
 .hidden { display: none !important; }
 .center { text-align: center; }
 
+/* Minimal utility shims (replacing Tailwind CDN usage) */
+.block { display: block; }
+.text-sm { font-size: var(--fs-sm); }
+.text-center { text-align: center; }
+.mb-2 { margin-bottom: var(--space-2); }
+.my-2 { margin-top: var(--space-2); margin-bottom: var(--space-2); }
+
 
 /* Fix misaligned header (global) */
 .icon-btn {

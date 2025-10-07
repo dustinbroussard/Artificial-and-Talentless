@@ -1,8 +1,10 @@
 document.addEventListener('DOMContentLoaded', () => {
-  // Allow Settings if either (a) fully onboarded OR (b) just finished questions (profile exists)
+  // Allow Settings if either:
+  // (a) fully onboarded, (b) finished questions (profile exists), or (c) in-progress draft
   const isOnboarded = localStorage.getItem('isOnboarded') === 'true';
   const hasProfile = !!localStorage.getItem('userProfile');
-  if (!isOnboarded && !hasProfile) {
+  const hasDraft = !!localStorage.getItem('userProfileDraft');
+  if (!isOnboarded && !hasProfile && !hasDraft) {
     window.location.href = 'index.html';
     return;
   }
@@ -108,7 +110,10 @@ document.addEventListener('DOMContentLoaded', () => {
     localStorage.setItem('isOnboarded', 'true');
     showMessage('Settings saved', 'info');
     // Smooth transition to Generator
-    setTimeout(() => { window.location.replace('generator.html'); }, 300);
+    setTimeout(() => {
+      try { sessionStorage.setItem('afterSettings', '1'); } catch (_) {}
+      window.location.replace('generator.html');
+    }, 300);
   });
 
   deleteBtn.addEventListener('click', async () => {

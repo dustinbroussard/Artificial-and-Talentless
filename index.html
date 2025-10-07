@@ -12,6 +12,19 @@
         }
       } catch (e) {}
     </script>
+    <script>
+      // Apply saved theme ASAP to prevent flash
+      try {
+        var pref = localStorage.getItem('app:theme') || 'system';
+        var mq = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)');
+        var resolved = pref === 'system' ? (mq && mq.matches ? 'dark' : 'light') : pref;
+        var root = document.documentElement;
+        if (root.getAttribute('data-theme') !== resolved) {
+          root.setAttribute('data-theme', resolved);
+          root.style.colorScheme = resolved;
+        }
+      } catch (e) {}
+    </script>
     <meta name="theme-color" content="#FFFFE3">
     <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -23,10 +36,10 @@
     <title>Artificial -and- Talentless</title>
     <!-- Tailwind CSS via CDN with proper integrity hash - TEMPORARY - prefer local build for production -->
     <!-- Font Awesome for icons with fallback -->
-    <link rel="stylesheet" 
+    <link rel="stylesheet"
           href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
           integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw=="
-          crossorigin="anonymous" 
+          crossorigin="anonymous"
           referrerpolicy="no-referrer" />
     <!-- Google Fonts with proper crossorigin -->
     <link rel="preconnect" href="https://fonts.googleapis.com">

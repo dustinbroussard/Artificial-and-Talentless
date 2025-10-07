@@ -12,12 +12,26 @@
         }
       } catch (e) {}
     </script>
+    <script>
+      // Apply saved theme ASAP to prevent flash
+      try {
+        var pref = localStorage.getItem('app:theme') || 'system';
+        var mq = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)');
+        var resolved = pref === 'system' ? (mq && mq.matches ? 'dark' : 'light') : pref;
+        var root = document.documentElement;
+        if (root.getAttribute('data-theme') !== resolved) {
+          root.setAttribute('data-theme', resolved);
+          root.style.colorScheme = resolved;
+        }
+      } catch (e) {}
+    </script>
     <link rel="manifest" href="manifest.webmanifest">
     <title>Artificial -and- Talentless</title>
-    <!-- Tailwind CSS CDN for styling -->
-    <script src="https://cdn.tailwindcss.com" onerror="console.warn('Tailwind CDN failed to load')"></script>
     <!-- Font Awesome for icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+          integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw=="
+          crossorigin="anonymous"
+          referrerpolicy="no-referrer">
     <!-- Google Fonts: Special Elite for that vintage typewriter feel -->
     <link href="https://fonts.googleapis.com/css2?family=Special+Elite&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
