@@ -52,4 +52,19 @@
     deferredPrompt = e;
     showInstallBanner();
   });
+
+  // Attempt to lock orientation to portrait when possible (mostly PWAs/Android)
+  function tryLockPortrait() {
+    try {
+      if (screen.orientation && typeof screen.orientation.lock === 'function') {
+        screen.orientation.lock('portrait').catch(() => {});
+      }
+    } catch (_) { /* no-op */ }
+  }
+  // Run on load and when app enters standalone mode
+  if (document.readyState === 'complete' || document.readyState === 'interactive') {
+    tryLockPortrait();
+  } else {
+    document.addEventListener('DOMContentLoaded', tryLockPortrait, { once: true });
+  }
 })();

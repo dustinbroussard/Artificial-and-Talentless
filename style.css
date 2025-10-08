@@ -568,3 +568,29 @@ h3 {
   white-space: nowrap;
   border: 0;
 }
+
+/* 20) Orientation lock overlay (disable landscape on touch devices) */
+@media screen and (orientation: landscape) and (hover: none) and (pointer: coarse) {
+  /* Prevent scrolling and visually mute underlying UI */
+  body { overflow: hidden; }
+  #logo-container, #header-content, #main-content-area, #button-footer {
+    filter: blur(2px) grayscale(20%);
+  }
+  /* Full-screen blocker overlay with rotation message */
+  body::after {
+    content: 'Please rotate your device to portrait to use this app.';
+    position: fixed;
+    inset: 0;
+    background: var(--bg);
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 2rem;
+    z-index: 10000;
+    font-size: 1.25rem;
+    line-height: 1.4;
+    pointer-events: auto; /* capture taps */
+  }
+}
